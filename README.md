@@ -179,3 +179,8 @@ xcrun xcresulttool export attachments --path /tmp/shotbin.xcresult --output-path
 | `AppModel.swift` | скан, напоминания, действия, уведомления |
 | `RootView.swift` | онбординг, главный экран, полки, поиск |
 | `DetailView.swift` | скриншот, находки с действиями, смена категории |
+
+## Лицензия
+
+MIT. Приложение в App Store — [Shotbin](https://apps.apple.com/app/shotbin),
+политика конфиденциальности — [nvsces.github.io/Shotbin](https://nvsces.github.io/Shotbin/).
