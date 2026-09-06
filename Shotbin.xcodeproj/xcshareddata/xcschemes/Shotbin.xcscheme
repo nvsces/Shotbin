@@ -3,20 +3,20 @@
    <BuildAction parallelizeBuildables = "YES" buildImplicitDependencies = "YES">
       <BuildActionEntries>
          <BuildActionEntry buildForTesting = "YES" buildForRunning = "YES" buildForProfiling = "YES" buildForArchiving = "YES" buildForAnalyzing = "YES">
-            <BuildableReference BuildableIdentifier = "primary" BlueprintIdentifier = "E5BAB57A059650F98315E75F" BuildableName = "Recall.app" BlueprintName = "Recall" ReferencedContainer = "container:Recall.xcodeproj"/>
+            <BuildableReference BuildableIdentifier = "primary" BlueprintIdentifier = "B88968514B34505EB24B8CA2" BuildableName = "Shotbin.app" BlueprintName = "Shotbin" ReferencedContainer = "container:Shotbin.xcodeproj"/>
          </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction buildConfiguration = "Debug" selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB" selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB" shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
          <TestableReference skipped = "NO">
-            <BuildableReference BuildableIdentifier = "primary" BlueprintIdentifier = "153E199E71655E1484C8D94F" BuildableName = "RecallUITests.xctest" BlueprintName = "RecallUITests" ReferencedContainer = "container:Recall.xcodeproj"/>
+            <BuildableReference BuildableIdentifier = "primary" BlueprintIdentifier = "A69E641CFE345F268E71ABD4" BuildableName = "ShotbinUITests.xctest" BlueprintName = "ShotbinUITests" ReferencedContainer = "container:Shotbin.xcodeproj"/>
          </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction buildConfiguration = "Debug" selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB" selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB" launchStyle = "0" useCustomWorkingDirectory = "NO" ignoresPersistentStateOnLaunch = "NO" debugDocumentVersioning = "YES" debugServiceExtension = "internal" allowLocationSimulation = "YES">
       <BuildableProductRunnable runnableDebuggingMode = "0">
-         <BuildableReference BuildableIdentifier = "primary" BlueprintIdentifier = "E5BAB57A059650F98315E75F" BuildableName = "Recall.app" BlueprintName = "Recall" ReferencedContainer = "container:Recall.xcodeproj"/>
+         <BuildableReference BuildableIdentifier = "primary" BlueprintIdentifier = "B88968514B34505EB24B8CA2" BuildableName = "Shotbin.app" BlueprintName = "Shotbin" ReferencedContainer = "container:Shotbin.xcodeproj"/>
       </BuildableProductRunnable>
    </LaunchAction>
    <ArchiveAction buildConfiguration = "Release" revealArchiveInOrganizer = "YES"/>

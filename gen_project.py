@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Генерирует Recall.xcodeproj из содержимого папки Recall/. Запускать после добавления файлов."""
+"""Генерирует Shotbin.xcodeproj из содержимого папки Shotbin/. Запускать после добавления файлов."""
 import os, uuid
 
-SRC = "Recall"
+SRC = "Shotbin"
 files = sorted(f for f in os.listdir(SRC) if f.endswith(".swift"))
-def oid(seed): return uuid.uuid5(uuid.NAMESPACE_DNS, "recall." + seed).hex[:24].upper()
+def oid(seed): return uuid.uuid5(uuid.NAMESPACE_DNS, "shotbin." + seed).hex[:24].upper()
 
 ids = {k: oid(k) for k in ["project","target","product","mainGroup","srcGroup","productsGroup","sourcesPhase",
                            "resourcesPhase","frameworksPhase","configList","projConfigList","debugCfg","releaseCfg",
@@ -25,8 +25,8 @@ settings_common = '''				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Recall/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Recall;
+				INFOPLIST_FILE = Shotbin/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Shotbin;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -53,7 +53,7 @@ ui_settings = '''				CODE_SIGN_STYLE = Automatic;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
-				TEST_TARGET_NAME = Recall;
+				TEST_TARGET_NAME = Shotbin;
 '''
 pbx = f'''// !$*UTF8*$!
 {{
@@ -66,7 +66,7 @@ pbx = f'''// !$*UTF8*$!
 /* Begin PBXBuildFile section */
 {chr(10).join(build_files)}
 		{ids["assets_bf"]} /* Assets.xcassets in Resources */ = {{isa = PBXBuildFile; fileRef = {ids["assets_fr"]} /* Assets.xcassets */; }};
-		{ids["uiTestBf"]} /* RecallUITests.swift in Sources */ = {{isa = PBXBuildFile; fileRef = {ids["uiTestFr"]} /* RecallUITests.swift */; }};
+		{ids["uiTestBf"]} /* ShotbinUITests.swift in Sources */ = {{isa = PBXBuildFile; fileRef = {ids["uiTestFr"]} /* ShotbinUITests.swift */; }};
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,7 +75,7 @@ pbx = f'''// !$*UTF8*$!
 			containerPortal = {ids["project"]} /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = {ids["target"]};
-			remoteInfo = Recall;
+			remoteInfo = Shotbin;
 		}};
 /* End PBXContainerItemProxy section */
 
@@ -83,9 +83,9 @@ pbx = f'''// !$*UTF8*$!
 {chr(10).join(file_refs)}
 		{ids["assets_fr"]} /* Assets.xcassets */ = {{isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; }};
 		{ids["plist_fr"]} /* Info.plist */ = {{isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; }};
-		{ids["product"]} /* Recall.app */ = {{isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Recall.app; sourceTree = BUILT_PRODUCTS_DIR; }};
-		{ids["uiProduct"]} /* RecallUITests.xctest */ = {{isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RecallUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; }};
-		{ids["uiTestFr"]} /* RecallUITests.swift */ = {{isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecallUITests.swift; sourceTree = "<group>"; }};
+		{ids["product"]} /* Shotbin.app */ = {{isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Shotbin.app; sourceTree = BUILT_PRODUCTS_DIR; }};
+		{ids["uiProduct"]} /* ShotbinUITests.xctest */ = {{isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShotbinUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; }};
+		{ids["uiTestFr"]} /* ShotbinUITests.swift */ = {{isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShotbinUITests.swift; sourceTree = "<group>"; }};
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,35 +109,35 @@ pbx = f'''// !$*UTF8*$!
 		{ids["mainGroup"]} = {{
 			isa = PBXGroup;
 			children = (
-				{ids["srcGroup"]} /* Recall */,
-				{ids["uiGroup"]} /* RecallUITests */,
+				{ids["srcGroup"]} /* Shotbin */,
+				{ids["uiGroup"]} /* ShotbinUITests */,
 				{ids["productsGroup"]} /* Products */,
 			);
 			sourceTree = "<group>";
 		}};
-		{ids["srcGroup"]} /* Recall */ = {{
+		{ids["srcGroup"]} /* Shotbin */ = {{
 			isa = PBXGroup;
 			children = (
 {chr(10).join(children)}
 				{ids["assets_fr"]} /* Assets.xcassets */,
 				{ids["plist_fr"]} /* Info.plist */,
 			);
-			path = Recall;
+			path = Shotbin;
 			sourceTree = "<group>";
 		}};
-		{ids["uiGroup"]} /* RecallUITests */ = {{
+		{ids["uiGroup"]} /* ShotbinUITests */ = {{
 			isa = PBXGroup;
 			children = (
-				{ids["uiTestFr"]} /* RecallUITests.swift */,
+				{ids["uiTestFr"]} /* ShotbinUITests.swift */,
 			);
-			path = RecallUITests;
+			path = ShotbinUITests;
 			sourceTree = "<group>";
 		}};
 		{ids["productsGroup"]} /* Products */ = {{
 			isa = PBXGroup;
 			children = (
-				{ids["product"]} /* Recall.app */,
-				{ids["uiProduct"]} /* RecallUITests.xctest */,
+				{ids["product"]} /* Shotbin.app */,
+				{ids["uiProduct"]} /* ShotbinUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -145,7 +145,7 @@ pbx = f'''// !$*UTF8*$!
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		{ids["target"]} /* Recall */ = {{
+		{ids["target"]} /* Shotbin */ = {{
 			isa = PBXNativeTarget;
 			buildConfigurationList = {ids["configList"]};
 			buildPhases = (
@@ -157,12 +157,12 @@ pbx = f'''// !$*UTF8*$!
 			);
 			dependencies = (
 			);
-			name = Recall;
-			productName = Recall;
-			productReference = {ids["product"]} /* Recall.app */;
+			name = Shotbin;
+			productName = Shotbin;
+			productReference = {ids["product"]} /* Shotbin.app */;
 			productType = "com.apple.product-type.application";
 		}};
-		{ids["uiTarget"]} /* RecallUITests */ = {{
+		{ids["uiTarget"]} /* ShotbinUITests */ = {{
 			isa = PBXNativeTarget;
 			buildConfigurationList = {ids["uiConfigList"]};
 			buildPhases = (
@@ -175,9 +175,9 @@ pbx = f'''// !$*UTF8*$!
 			dependencies = (
 				{ids["uiDep"]} /* PBXTargetDependency */,
 			);
-			name = RecallUITests;
-			productName = RecallUITests;
-			productReference = {ids["uiProduct"]} /* RecallUITests.xctest */;
+			name = ShotbinUITests;
+			productName = ShotbinUITests;
+			productReference = {ids["uiProduct"]} /* ShotbinUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		}};
 /* End PBXNativeTarget section */
@@ -203,8 +203,8 @@ pbx = f'''// !$*UTF8*$!
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				{ids["target"]} /* Recall */,
-				{ids["uiTarget"]} /* RecallUITests */,
+				{ids["target"]} /* Shotbin */,
+				{ids["uiTarget"]} /* ShotbinUITests */,
 			);
 		}};
 /* End PBXProject section */
@@ -240,7 +240,7 @@ pbx = f'''// !$*UTF8*$!
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				{ids["uiTestBf"]} /* RecallUITests.swift in Sources */,
+				{ids["uiTestBf"]} /* ShotbinUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		}};
@@ -249,7 +249,7 @@ pbx = f'''// !$*UTF8*$!
 /* Begin PBXTargetDependency section */
 		{ids["uiDep"]} /* PBXTargetDependency */ = {{
 			isa = PBXTargetDependency;
-			target = {ids["target"]} /* Recall */;
+			target = {ids["target"]} /* Shotbin */;
 			targetProxy = {ids["uiProxy"]} /* PBXContainerItemProxy */;
 		}};
 /* End PBXTargetDependency section */
@@ -351,27 +351,27 @@ pbx = f'''// !$*UTF8*$!
 	rootObject = {ids["project"]} /* Project object */;
 }}
 '''
-os.makedirs("Recall.xcodeproj/xcshareddata/xcschemes", exist_ok=True)
-open("Recall.xcodeproj/project.pbxproj","w").write(pbx)
-open("Recall.xcodeproj/xcshareddata/xcschemes/Recall.xcscheme","w").write(f'''<?xml version="1.0" encoding="UTF-8"?>
+os.makedirs("Shotbin.xcodeproj/xcshareddata/xcschemes", exist_ok=True)
+open("Shotbin.xcodeproj/project.pbxproj","w").write(pbx)
+open("Shotbin.xcodeproj/xcshareddata/xcschemes/Shotbin.xcscheme","w").write(f'''<?xml version="1.0" encoding="UTF-8"?>
 <Scheme LastUpgradeVersion = "1600" version = "1.7">
    <BuildAction parallelizeBuildables = "YES" buildImplicitDependencies = "YES">
       <BuildActionEntries>
          <BuildActionEntry buildForTesting = "YES" buildForRunning = "YES" buildForProfiling = "YES" buildForArchiving = "YES" buildForAnalyzing = "YES">
-            <BuildableReference BuildableIdentifier = "primary" BlueprintIdentifier = "{ids["target"]}" BuildableName = "Recall.app" BlueprintName = "Recall" ReferencedContainer = "container:Recall.xcodeproj"/>
+            <BuildableReference BuildableIdentifier = "primary" BlueprintIdentifier = "{ids["target"]}" BuildableName = "Shotbin.app" BlueprintName = "Shotbin" ReferencedContainer = "container:Shotbin.xcodeproj"/>
          </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction buildConfiguration = "Debug" selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB" selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB" shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
          <TestableReference skipped = "NO">
-            <BuildableReference BuildableIdentifier = "primary" BlueprintIdentifier = "{ids["uiTarget"]}" BuildableName = "RecallUITests.xctest" BlueprintName = "RecallUITests" ReferencedContainer = "container:Recall.xcodeproj"/>
+            <BuildableReference BuildableIdentifier = "primary" BlueprintIdentifier = "{ids["uiTarget"]}" BuildableName = "ShotbinUITests.xctest" BlueprintName = "ShotbinUITests" ReferencedContainer = "container:Shotbin.xcodeproj"/>
          </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction buildConfiguration = "Debug" selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB" selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB" launchStyle = "0" useCustomWorkingDirectory = "NO" ignoresPersistentStateOnLaunch = "NO" debugDocumentVersioning = "YES" debugServiceExtension = "internal" allowLocationSimulation = "YES">
       <BuildableProductRunnable runnableDebuggingMode = "0">
-         <BuildableReference BuildableIdentifier = "primary" BlueprintIdentifier = "{ids["target"]}" BuildableName = "Recall.app" BlueprintName = "Recall" ReferencedContainer = "container:Recall.xcodeproj"/>
+         <BuildableReference BuildableIdentifier = "primary" BlueprintIdentifier = "{ids["target"]}" BuildableName = "Shotbin.app" BlueprintName = "Shotbin" ReferencedContainer = "container:Shotbin.xcodeproj"/>
       </BuildableProductRunnable>
    </LaunchAction>
    <ArchiveAction buildConfiguration = "Release" revealArchiveInOrganizer = "YES"/>

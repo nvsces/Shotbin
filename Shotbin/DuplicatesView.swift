@@ -25,7 +25,7 @@ struct DuplicatesView: View {
                     VStack(spacing: 10) {
                         Image(systemName: "square.on.square.dashed").font(.largeTitle).foregroundStyle(.secondary)
                         Text("Повторов нет").font(.headline)
-                        Text("Recall сравнивает кадры между собой и собирает сюда серии почти одинаковых скриншотов.")
+                        Text("Shotbin сравнивает кадры между собой и собирает сюда серии почти одинаковых скриншотов.")
                             .font(.subheadline).foregroundStyle(.secondary).multilineTextAlignment(.center)
                     }
                     .frame(maxWidth: .infinity).padding(.vertical, 24)
@@ -34,7 +34,7 @@ struct DuplicatesView: View {
 
             if !groups.isEmpty {
                 Section {
-                    Text("Нажмите на кадр, чтобы оставить именно его. По умолчанию Recall оставляет тот, где больше распознанного текста.")
+                    Text("Нажмите на кадр, чтобы оставить именно его. По умолчанию Shotbin оставляет тот, где больше распознанного текста.")
                         .font(.caption).foregroundStyle(.secondary)
                         .listRowBackground(Color.clear)
                 }

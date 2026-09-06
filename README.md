@@ -1,4 +1,4 @@
-# Recall
+# Shotbin
 
 iOS-приложение, которое находит скриншоты в галерее, читает с них текст и раскладывает
 по полкам: фильмы из рилсов, коды и пароли, чеки, билеты, адреса, контакты, рецепты.
@@ -9,7 +9,7 @@ iOS-приложение, которое находит скриншоты в г
 
 Скриншот делают, когда информация нужна: код от домофона, фильм из ленты, бронь столика,
 адрес, который скинул друг. Потом он тонет среди тысячи других, и через неделю его уже
-не найти. Recall возвращает эти скриншоты в момент, когда они снова нужны.
+не найти. Shotbin возвращает эти скриншоты в момент, когда они снова нужны.
 
 ## Что делает
 
@@ -28,8 +28,8 @@ iOS-приложение, которое находит скриншоты в г
 ## Сборка
 
 ```bash
-python3 gen_project.py      # пересобрать Recall.xcodeproj после добавления файлов
-open Recall.xcodeproj       # выбрать Team в Signing & Capabilities, ⌘R
+python3 gen_project.py      # пересобрать Shotbin.xcodeproj после добавления файлов
+open Shotbin.xcodeproj       # выбрать Team в Signing & Capabilities, ⌘R
 ```
 
 iOS 17+. Разрешения: Фото (чтение и удаление), Календарь (только запись), Уведомления.
@@ -43,9 +43,9 @@ iOS 17+. Разрешения: Фото (чтение и удаление), Ка
 ```bash
 UDID=<id симулятора>
 xcrun simctl boot $UDID && xcrun simctl addmedia $UDID samples/*.png   # свои тестовые картинки
-xcodebuild test -project Recall.xcodeproj -scheme Recall -destination "id=$UDID" \
-  -resultBundlePath /tmp/recall.xcresult
-xcrun xcresulttool export attachments --path /tmp/recall.xcresult --output-path /tmp/recall-shots
+xcodebuild test -project Shotbin.xcodeproj -scheme Shotbin -destination "id=$UDID" \
+  -resultBundlePath /tmp/shotbin.xcresult
+xcrun xcresulttool export attachments --path /tmp/shotbin.xcresult --output-path /tmp/shotbin-shots
 ```
 
 Аргумент запуска `-autoRequest` заставляет приложение запросить доступ к фото сразу,
@@ -55,7 +55,7 @@ xcrun xcresulttool export attachments --path /tmp/recall.xcresult --output-path 
 
 Скриншот отработал: текст распознан, код скопирован, дата в календаре. Картинка в
 галерее больше не нужна, а весит она мегабайты. Экран «Уборка» собирает кандидатов
-и удаляет их одной пачкой, оставляя карточку в Recall.
+и удаляет их одной пачкой, оставляя карточку в Shotbin.
 
 Кандидаты подбираются по правилам:
 

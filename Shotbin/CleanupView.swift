@@ -80,7 +80,7 @@ struct CleanupView: View {
                     .foregroundStyle(.white)
                     .disabled(working)
 
-                    Text("\(chosen.count) шт. уйдёт в «Недавно удалённые» на 30 дней. Данные останутся в Recall.")
+                    Text("\(chosen.count) шт. уйдёт в «Недавно удалённые» на 30 дней. Данные останутся в Shotbin.")
                         .font(.caption2).foregroundStyle(.secondary).multilineTextAlignment(.center)
                 }
                 .padding(.horizontal).padding(.bottom, 8)
@@ -92,7 +92,7 @@ struct CleanupView: View {
             Button("Удалить и освободить \(bytes(chosenSize))", role: .destructive) { Task { await run() } }
             Button("Отмена", role: .cancel) {}
         } message: {
-            Text("Распознанный текст, коды и даты останутся в Recall. Сами картинки система положит в «Недавно удалённые».")
+            Text("Распознанный текст, коды и даты останутся в Shotbin. Сами картинки система положит в «Недавно удалённые».")
         }
         .task {
             await model.measure(groups.flatMap(\.1))

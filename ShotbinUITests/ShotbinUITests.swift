@@ -2,7 +2,7 @@ import XCTest
 
 /// Сквозной прогон в симуляторе: даёт доступ к фото, ждёт распознавание,
 /// проходит по экранам и снимает скриншоты.
-final class RecallUITests: XCTestCase {
+final class ShotbinUITests: XCTestCase {
     /// Пауза посреди скана и продолжение с того же места.
     func testPauseAndResume() {
         let app = XCUIApplication()
@@ -38,7 +38,7 @@ final class RecallUITests: XCTestCase {
     /// Скриншоты кладём во вложения теста; достать: xcrun xcresulttool export attachments.
     private func shot(_ name: String) {
         let a = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
-        a.name = "recall-\(name)"
+        a.name = "shotbin-\(name)"
         a.lifetime = .keepAlways
         add(a)
     }

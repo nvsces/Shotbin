@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Recall находит скриншоты в вашей галерее и распознаёт на них текст — на устройстве, без отправки в сеть.</string>
+	<string>Shotbin находит скриншоты в вашей галерее и распознаёт на них текст — на устройстве, без отправки в сеть.</string>
 	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
 	<string>Чтобы добавлять события из скриншотов — билеты, брони, встречи — в календарь.</string>
 	<key>UIBackgroundModes</key>

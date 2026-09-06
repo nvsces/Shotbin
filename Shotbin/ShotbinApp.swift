@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct RecallApp: App {
+struct ShotbinApp: App {
     @StateObject private var model = AppModel()
 
     var body: some Scene {

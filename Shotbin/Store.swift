@@ -4,10 +4,10 @@ import Foundation
 /// (тысяча скриншотов = сотни килобайт), а читать его может кто угодно.
 final class Store: @unchecked Sendable {
     private let url: URL
-    private let queue = DispatchQueue(label: "recall.store")
+    private let queue = DispatchQueue(label: "shotbin.store")
 
     init() {
-        let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("Recall", isDirectory: true)
+        let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("Shotbin", isDirectory: true)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         url = dir.appendingPathComponent("screenshots.json")
     }

@@ -96,7 +96,7 @@ struct DetailView: View {
                 Button("Удалить, данные оставить", role: .destructive) { Task { await model.free([shot]); dismiss() } }
                 Button("Удалить вместе с карточкой", role: .destructive) { Task { await model.delete(shot); dismiss() } }
                 Button("Отмена", role: .cancel) {}
-            } message: { Text("Картинка попадёт в «Недавно удалённые» на 30 дней. Распознанный текст и находки можно оставить в Recall.") }
+            } message: { Text("Картинка попадёт в «Недавно удалённые» на 30 дней. Распознанный текст и находки можно оставить в Shotbin.") }
         } else {
             ContentUnavailableView("Скриншот удалён", systemImage: "photo")
         }

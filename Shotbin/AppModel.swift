@@ -62,7 +62,10 @@ final class AppModel: ObservableObject {
     var reminders: [Reminder] {
         var out: [Reminder] = []
         let now = Date()
-        for s in all where !s.isDone {
+        // Из серии повторов напоминание даёт только один кадр: об одном и том же
+        // рейсе не нужно напоминать столько раз, сколько его успели переснять.
+        let shadowed = Set(duplicateGroups.flatMap { $0.drop.map(\.id) })
+        for s in all where !s.isDone && !shadowed.contains(s.id) {
             if let d = s.upcomingDate, d.timeIntervalSince(now) < 30 * 86400 {
                 let f = RelativeDateTimeFormatter(); f.locale = Locale(identifier: "ru_RU"); f.unitsStyle = .full
                 out.append(Reminder(id: "up-\(s.id)", kind: .upcoming, screenshot: s, title: s.summary,

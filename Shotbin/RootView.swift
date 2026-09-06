@@ -13,7 +13,7 @@ struct RootView: View {
                 default: welcomeView
                 }
             }
-            .navigationTitle("Recall")
+            .navigationTitle("Shotbin")
             .navigationDestination(for: Category.self) { CategoryView(category: $0) }
             .navigationDestination(for: Screenshot.self) { DetailView(shotID: $0.id) }
         }
@@ -28,7 +28,7 @@ struct RootView: View {
             Spacer()
             Image(systemName: "photo.stack").font(.system(size: 64)).foregroundStyle(Color.accentColor)
             Text("Скриншоты, о которых вы забыли").font(.title2.bold()).multilineTextAlignment(.center)
-            Text("Recall найдёт скриншоты в галерее, прочитает текст и разложит по полкам: коды, чеки, билеты, фильмы, адреса. Всё на устройстве — ничего никуда не отправляется.")
+            Text("Shotbin найдёт скриншоты в галерее, прочитает текст и разложит по полкам: коды, чеки, билеты, фильмы, адреса. Всё на устройстве — ничего никуда не отправляется.")
                 .foregroundStyle(.secondary).multilineTextAlignment(.center).padding(.horizontal, 24)
             Spacer()
             Button { Task { await model.requestAccess(); model.requestNotifications() } } label: {
@@ -42,7 +42,7 @@ struct RootView: View {
         VStack(spacing: 16) {
             Image(systemName: "lock.slash").font(.system(size: 48)).foregroundStyle(.secondary)
             Text("Нет доступа к фото").font(.headline)
-            Text("Разрешите доступ в Настройках → Recall → Фото.").foregroundStyle(.secondary).multilineTextAlignment(.center)
+            Text("Разрешите доступ в Настройках → Shotbin → Фото.").foregroundStyle(.secondary).multilineTextAlignment(.center)
             Button("Открыть настройки") { if let u = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(u) } }
         }.padding()
     }
