@@ -6,14 +6,11 @@
 	<string>Shotbin находит скриншоты в вашей галерее и распознаёт на них текст — на устройстве, без отправки в сеть.</string>
 	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
 	<string>Чтобы добавлять события из скриншотов — билеты, брони, встречи — в календарь.</string>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>processing</string>
-	</array>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>tel</string>
 		<string>maps</string>
+		<string>mailto</string>
 	</array>
 </dict>
 </plist>
