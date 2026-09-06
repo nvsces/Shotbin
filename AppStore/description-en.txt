@@ -1,0 +1,20 @@
+Shotbin sorts out the screenshots piling up in your photo library.
+
+You take a screenshot to keep a code from a text message, a receipt, a restaurant address or a film someone recommended. A week later it is buried among a thousand other images and finding it is hopeless.
+
+Shotbin reads the text on your screenshots directly on your device and sorts them onto shelves: codes and passwords, receipts and payments, tickets and bookings, addresses, contacts, links, conversations, recipes. Everything it finds becomes an action: copy a code with one tap, call a number, open an address on the map, add a date to your calendar.
+
+WHAT IT DOES
+
+• Shelves. Your screenshots are sorted by meaning, so you never scroll the library again.
+• Reminders. A ticket for tomorrow or a booking on Friday will not slip away.
+• Search inside images. Find a screenshot by a word you saw on the screen.
+• Cleanup. Once a screenshot has done its job, delete the image and keep what it contained.
+• Duplicates. Finds series of near-identical frames and suggests keeping the best one.
+• Photos. Optionally checks your ordinary photos for duplicates, in a separate section.
+
+EVERYTHING STAYS ON YOUR DEVICE
+
+Text recognition runs offline, using the system frameworks. No screenshot and no line of text is ever sent anywhere. No account, no cloud, no analytics.
+
+The app asks for photo access to read your screenshots and delete the ones you choose. Calendar access is write-only and used solely to add events: Shotbin cannot see your existing appointments.

@@ -1,6 +1,8 @@
 import Foundation
 
 /// Категория содержимого скриншота. Порядок — порядок на главном экране.
+/// Значения намеренно не переводятся: они записаны в сохранённых карточках,
+/// смена сломала бы кэш у тех, кто уже пользуется. Показываем `title`.
 enum Category: String, Codable, CaseIterable, Identifiable, Sendable {
     case watch = "Посмотреть"          // фильмы, сериалы, книги, места из рилсов
     case codes = "Коды и пароли"
@@ -13,6 +15,22 @@ enum Category: String, Codable, CaseIterable, Identifiable, Sendable {
     case recipes = "Рецепты"
     case notes = "Прочее"
     var id: String { rawValue }
+
+    /// Название на языке пользователя.
+    var title: String {
+        switch self {
+        case .watch: return String(localized: "Посмотреть")
+        case .codes: return String(localized: "Коды и пароли")
+        case .payments: return String(localized: "Чеки и платежи")
+        case .tickets: return String(localized: "Билеты и брони")
+        case .places: return String(localized: "Адреса и места")
+        case .contacts: return String(localized: "Контакты")
+        case .links: return String(localized: "Ссылки")
+        case .chats: return String(localized: "Переписки")
+        case .recipes: return String(localized: "Рецепты")
+        case .notes: return String(localized: "Прочее")
+        }
+    }
 
     var symbol: String {
         switch self {
@@ -57,15 +75,15 @@ struct Extracted: Codable, Identifiable, Hashable, Sendable {
     }
     var actionTitle: String {
         switch kind {
-        case .code, .wifi, .orderNumber: return "Скопировать"
-        case .amount: return "Скопировать сумму"
-        case .date: return "В календарь"
-        case .phone: return "Позвонить"
-        case .link: return "Открыть"
-        case .address: return "На карте"
-        case .email: return "Написать"
-        case .title: return "Найти"
-        case .flight: return "Скопировать рейс"
+        case .code, .wifi, .orderNumber: return String(localized: "Скопировать")
+        case .amount: return String(localized: "Скопировать сумму")
+        case .date: return String(localized: "В календарь")
+        case .phone: return String(localized: "Позвонить")
+        case .link: return String(localized: "Открыть")
+        case .address: return String(localized: "На карте")
+        case .email: return String(localized: "Написать")
+        case .title: return String(localized: "Найти")
+        case .flight: return String(localized: "Скопировать рейс")
         }
     }
 }

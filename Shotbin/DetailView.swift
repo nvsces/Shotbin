@@ -24,10 +24,10 @@ struct DetailView: View {
                     HStack {
                         Menu {
                             ForEach(Category.allCases) { c in
-                                Button { model.setCategory(shot, c) } label: { Label(c.rawValue, systemImage: c.symbol) }
+                                Button { model.setCategory(shot, c) } label: { Label(c.title, systemImage: c.symbol) }
                             }
                         } label: {
-                            Label(shot.category.rawValue, systemImage: shot.category.symbol)
+                            Label(shot.category.title, systemImage: shot.category.symbol)
                                 .font(.subheadline.weight(.medium)).padding(.horizontal, 10).padding(.vertical, 6)
                                 .background(Color.accentColor.opacity(0.12), in: Capsule())
                         }
@@ -105,7 +105,7 @@ struct DetailView: View {
     private func freedNote(_ shot: Screenshot) -> String {
         let size = shot.freedBytes > 0 ? ByteCountFormatter.string(fromByteCount: shot.freedBytes, countStyle: .file) : nil
         let when = shot.freedAt?.formatted(date: .abbreviated, time: .omitted)
-        return [size.map { "Вернули \($0)" }, when.map { "Картинки нет с \($0)" }]
+        return [size.map { String(localized: "Вернули \($0)") }, when.map { String(localized: "Картинки нет с \($0)") }]
             .compactMap { $0 }.joined(separator: " · ")
     }
 

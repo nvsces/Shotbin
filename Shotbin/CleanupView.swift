@@ -40,7 +40,7 @@ struct CleanupView: View {
                     }
                 } header: {
                     HStack {
-                        Text(reason.rawValue)
+                        Text(reason.title)
                         Spacer()
                         Button(allSelected(list) ? "Снять" : "Все") { toggleAll(list) }
                             .font(.caption.weight(.semibold)).textCase(nil)
@@ -120,7 +120,7 @@ struct CleanupView: View {
                 .frame(width: 40, height: 56)
                 .clipped()
             VStack(alignment: .leading, spacing: 2) {
-                Text(s.summary.isEmpty ? s.category.rawValue : s.summary)
+                Text(s.summary.isEmpty ? s.category.title : s.summary)
                     .lineLimit(1).truncationMode(.tail)
                 Text(s.createdAt.formatted(date: .abbreviated, time: .omitted))
                     .font(.caption).foregroundStyle(.secondary)

@@ -6,7 +6,8 @@ SRC = "Shotbin"
 files = sorted(f for f in os.listdir(SRC) if f.endswith(".swift"))
 def oid(seed): return uuid.uuid5(uuid.NAMESPACE_DNS, "shotbin." + seed).hex[:24].upper()
 
-ids = {k: oid(k) for k in ["project","target","product","mainGroup","srcGroup","productsGroup","sourcesPhase",
+ids = {k: oid(k) for k in ["strings_fr","strings_bf",
+                           "project","target","product","mainGroup","srcGroup","productsGroup","sourcesPhase",
                            "resourcesPhase","frameworksPhase","configList","projConfigList","debugCfg","releaseCfg",
                            "targetDebug","targetRelease","assets_fr","assets_bf","plist_fr",
                            "uiTarget","uiProduct","uiGroup","uiSources","uiFrameworks","uiResources","uiConfigList","uiDebug","uiRelease","uiDep","uiProxy","uiTestFr","uiTestBf"]}
@@ -37,6 +38,7 @@ settings_common = '''				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nvsces.recall;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -66,6 +68,7 @@ pbx = f'''// !$*UTF8*$!
 /* Begin PBXBuildFile section */
 {chr(10).join(build_files)}
 		{ids["assets_bf"]} /* Assets.xcassets in Resources */ = {{isa = PBXBuildFile; fileRef = {ids["assets_fr"]} /* Assets.xcassets */; }};
+		{ids["strings_bf"]} /* Localizable.xcstrings in Resources */ = {{isa = PBXBuildFile; fileRef = {ids["strings_fr"]} /* Localizable.xcstrings */; }};
 		{ids["uiTestBf"]} /* ShotbinUITests.swift in Sources */ = {{isa = PBXBuildFile; fileRef = {ids["uiTestFr"]} /* ShotbinUITests.swift */; }};
 /* End PBXBuildFile section */
 
@@ -82,6 +85,7 @@ pbx = f'''// !$*UTF8*$!
 /* Begin PBXFileReference section */
 {chr(10).join(file_refs)}
 		{ids["assets_fr"]} /* Assets.xcassets */ = {{isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; }};
+		{ids["strings_fr"]} /* Localizable.xcstrings */ = {{isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; }};
 		{ids["plist_fr"]} /* Info.plist */ = {{isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; }};
 		{ids["product"]} /* Shotbin.app */ = {{isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Shotbin.app; sourceTree = BUILT_PRODUCTS_DIR; }};
 		{ids["uiProduct"]} /* ShotbinUITests.xctest */ = {{isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShotbinUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; }};
@@ -120,6 +124,7 @@ pbx = f'''// !$*UTF8*$!
 			children = (
 {chr(10).join(children)}
 				{ids["assets_fr"]} /* Assets.xcassets */,
+				{ids["strings_fr"]} /* Localizable.xcstrings */,
 				{ids["plist_fr"]} /* Info.plist */,
 			);
 			path = Shotbin;
@@ -192,10 +197,11 @@ pbx = f'''// !$*UTF8*$!
 			}};
 			buildConfigurationList = {ids["projConfigList"]};
 			compatibilityVersion = "Xcode 14.0";
-			developmentRegion = en;
+			developmentRegion = ru;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				ru,
 				Base,
 			);
 			mainGroup = {ids["mainGroup"]};
@@ -215,6 +221,7 @@ pbx = f'''// !$*UTF8*$!
 			buildActionMask = 2147483647;
 			files = (
 				{ids["assets_bf"]} /* Assets.xcassets in Resources */,
+				{ids["strings_bf"]} /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		}};

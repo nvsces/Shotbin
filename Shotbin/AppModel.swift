@@ -50,26 +50,28 @@ final class AppModel: ObservableObject {
         let (all, shots) = libraryCounts
         guard all > 0 else { return "" }
         let rest = max(0, all - shots)
-        guard rest > 0 else { return "В галерее \(all) картинок, все помечены как снимки экрана." }
-        return "В галерее \(all) картинок. Снимков экрана среди них \(shots) — их и разбираем. Остальные \(rest) фото можно проверить на повторы отдельно."
+        guard rest > 0 else { return String(localized: "В галерее \(all) картинок, все помечены как снимки экрана.") }
+        return String(localized: "В галерее \(all) картинок. Снимков экрана среди них \(shots) — их и разбираем. Остальные \(rest) фото можно проверить на повторы отдельно.")
     }
 
     /// Подпись у входа в раздел фотографий.
     func photosNote(scanner: PhotoScanner) -> String {
-        if scanner.isScanning { return "Сравниваю: \(scanner.progress.done) из \(scanner.progress.total)" }
+        if scanner.isScanning { return String(localized: "Сравниваю: \(scanner.progress.done) из \(scanner.progress.total)") }
         if scanner.neverScanned {
             let rest = max(0, libraryCounts.all - libraryCounts.screenshots)
-            return rest > 0 ? "Проверить \(rest) фото на повторы" : "Проверить фото на повторы"
+            return rest > 0
+                ? String(localized: "Проверить \(rest) фото на повторы")
+                : String(localized: "Проверить фото на повторы")
         }
-        if scanner.dropCount > 0 { return "\(scanner.dropCount) повторов среди \(scanner.scannedCount) фото" }
-        return "Повторов нет · проверено \(scanner.scannedCount)"
+        if scanner.dropCount > 0 { return String(localized: "\(scanner.dropCount) повторов среди \(scanner.scannedCount) фото") }
+        return String(localized: "Повторов нет · проверено \(scanner.scannedCount)")
     }
 
     var shelfSummary: String {
         let pending = all.filter { !$0.isDone }.count
         let freed = freedCount
-        var parts = ["\(pending) скриншотов"]
-        if freed > 0 { parts.append("\(freed) без картинки") }
+        var parts = [String(localized: "\(pending) скриншотов")]
+        if freed > 0 { parts.append(String(localized: "\(freed) без картинки")) }
         return parts.joined(separator: " · ")
     }
 
@@ -86,18 +88,20 @@ final class AppModel: ObservableObject {
         let shadowed = Set(duplicateGroups.flatMap { $0.drop.map(\.id) })
         for s in all where !s.isDone && !shadowed.contains(s.id) {
             if let d = s.upcomingDate, d.timeIntervalSince(now) < 30 * 86400 {
-                let f = RelativeDateTimeFormatter(); f.locale = Locale(identifier: "ru_RU"); f.unitsStyle = .full
+                // Локаль не задаём: берётся язык интерфейса, иначе на английском
+                // остаётся русское «через 2 недели».
+                let f = RelativeDateTimeFormatter(); f.unitsStyle = .full
                 out.append(Reminder(id: "up-\(s.id)", kind: .upcoming, screenshot: s, title: s.summary,
-                                    subtitle: "Дата на скриншоте — \(f.localizedString(for: d, relativeTo: now))", date: d))
+                                    subtitle: String(localized: "Дата на скриншоте — \(f.localizedString(for: d, relativeTo: now))"), date: d))
             } else if s.category == .watch, s.ageDays >= 3 {
                 out.append(Reminder(id: "w-\(s.id)", kind: .watch, screenshot: s, title: s.summary,
-                                    subtitle: "Сохранили \(s.ageDays) дн. назад и не отметили", date: nil))
+                                    subtitle: String(localized: "Сохранили \(s.ageDays) дн. назад и не отметили"), date: nil))
             } else if s.category == .codes, s.ageDays >= 30 {
                 out.append(Reminder(id: "x-\(s.id)", kind: .expiring, screenshot: s, title: s.summary,
-                                    subtitle: "Код лежит месяц — ещё нужен?", date: nil))
+                                    subtitle: String(localized: "Код лежит месяц — ещё нужен?"), date: nil))
             } else if [.tickets, .places].contains(s.category), s.ageDays >= 14, s.ageDays <= 90 {
                 out.append(Reminder(id: "f-\(s.id)", kind: .forgotten, screenshot: s, title: s.summary,
-                                    subtitle: "Сохранили \(s.ageDays) дн. назад", date: nil))
+                                    subtitle: String(localized: "Сохранили \(s.ageDays) дн. назад"), date: nil))
             }
         }
         return out.sorted { ($0.date ?? .distantFuture) < ($1.date ?? .distantFuture) }.prefix(20).map { $0 }
@@ -218,17 +222,23 @@ final class AppModel: ObservableObject {
     /// Скриншот отработал: данные вытащены, картинка в галерее больше не нужна.
     /// Считаем его кандидатом на освобождение места.
     enum FreeReason: String, CaseIterable, Identifiable, Sendable {
-        case done = "Разобранные"
-        case oldCode = "Коды старше месяца"
-        case pastDate = "Прошедшие даты"
-        case empty = "Без текста"
+        case done, oldCode, pastDate, empty
         var id: String { rawValue }
+
+        var title: String {
+            switch self {
+            case .done: return String(localized: "Разобранные")
+            case .oldCode: return String(localized: "Коды старше месяца")
+            case .pastDate: return String(localized: "Прошедшие даты")
+            case .empty: return String(localized: "Без текста")
+            }
+        }
         var hint: String {
             switch self {
-            case .done: return "Вы отметили «разобрался» — данные уже в карточке"
-            case .oldCode: return "Код или пароль лежит больше месяца"
-            case .pastDate: return "Билет или бронь на дату, которая прошла"
-            case .empty: return "Vision не нашёл текста — разбирать нечего"
+            case .done: return String(localized: "Вы отметили «разобрался» — данные уже в карточке")
+            case .oldCode: return String(localized: "Код или пароль лежит больше месяца")
+            case .pastDate: return String(localized: "Билет или бронь на дату, которая прошла")
+            case .empty: return String(localized: "Текста не нашлось — разбирать нечего")
             }
         }
     }
@@ -476,8 +486,8 @@ final class AppModel: ObservableObject {
             let fire = d.addingTimeInterval(-86400)
             guard fire > Date() else { continue }
             let content = UNMutableNotificationContent()
-            content.title = "Завтра: \(r.title)"
-            content.body = "Вы сохраняли это скриншотом. Открыть?"
+            content.title = String(localized: "Завтра: \(r.title)")
+            content.body = String(localized: "Вы сохраняли это скриншотом. Открыть?")
             content.sound = .default
             let comps = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: fire)
             center.add(UNNotificationRequest(identifier: r.id, content: content, trigger: UNCalendarNotificationTrigger(dateMatching: comps, repeats: false)))

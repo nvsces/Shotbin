@@ -49,6 +49,70 @@ final class ShotbinUITests: XCTestCase {
         }
     }
 
+    /// Снимки для App Store на русском.
+    func testStoreShotsRU() { captureStoreShots(lang: "ru") }
+    /// Снимки для App Store на английском.
+    func testStoreShotsEN() { captureStoreShots(lang: "en") }
+
+    private func captureStoreShots(lang: String) {
+        let app = XCUIApplication()
+        app.launchArguments = ["-autoRequest",
+                               "-AppleLanguages", "(\(lang))",
+                               "-AppleLocale", lang == "en" ? "en_US" : "ru_RU"]
+        app.launch()
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        for title in ["Разрешить полный доступ", "Allow Full Access"] {
+            let b = springboard.buttons[title]
+            if b.waitForExistence(timeout: 8) { b.tap(); break }
+        }
+        let scanning = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Читаю' OR label BEGINSWITH 'Reading'")).firstMatch
+        _ = scanning.waitForExistence(timeout: 20)
+        wait(for: [expectation(for: NSPredicate(format: "exists == false"), evaluatedWith: scanning)], timeout: 240)
+        sleep(3)
+        shot("\(lang)-1-home")
+
+        // полка с кодами
+        for name in ["Коды и пароли", "Codes and passwords"] {
+            let cell = app.cells.containing(.staticText, identifier: name).firstMatch
+            if cell.waitForExistence(timeout: 3) {
+                cell.tap(); sleep(2); shot("\(lang)-2-shelf")
+                let first = app.cells.firstMatch
+                if first.waitForExistence(timeout: 3) { first.tap(); sleep(3); shot("\(lang)-3-detail")
+                    app.navigationBars.buttons.element(boundBy: 0).tap(); sleep(1) }
+                app.navigationBars.buttons.element(boundBy: 0).tap(); sleep(1)
+                break
+            }
+        }
+
+        // повторы
+        for name in ["Повторы", "Duplicates"] {
+            let cell = app.cells.containing(.staticText, identifier: name).firstMatch
+            if cell.waitForExistence(timeout: 3) {
+                cell.tap(); sleep(3); shot("\(lang)-4-duplicates")
+                app.navigationBars.buttons.element(boundBy: 0).tap(); sleep(1)
+                break
+            }
+        }
+
+        // уборка
+        for name in ["Освободить место", "Free up space"] {
+            let cell = app.cells.containing(.staticText, identifier: name).firstMatch
+            if cell.waitForExistence(timeout: 3) {
+                cell.tap(); sleep(3); shot("\(lang)-5-cleanup")
+                app.navigationBars.buttons.element(boundBy: 0).tap(); sleep(1)
+                break
+            }
+        }
+
+        // поиск
+        let search = app.searchFields.firstMatch
+        if search.waitForExistence(timeout: 5) {
+            search.tap()
+            search.typeText(lang == "en" ? "code" : "код")
+            sleep(3); shot("\(lang)-6-search")
+        }
+    }
+
     /// Пауза посреди скана и продолжение с того же места.
     func testPauseAndResume() {
         let app = XCUIApplication()

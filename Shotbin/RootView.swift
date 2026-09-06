@@ -153,7 +153,7 @@ struct HomeView: View {
                         NavigationLink(value: cat) {
                             HStack {
                                 Image(systemName: cat.symbol).foregroundStyle(Color.accentColor).frame(width: 28)
-                                Text(cat.rawValue)
+                                Text(cat.title)
                                 Spacer()
                                 Text("\(n)").foregroundStyle(.secondary).monospacedDigit()
                             }
@@ -201,7 +201,7 @@ struct ReminderRow: View {
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 4) {
                     Image(systemName: reminder.symbol).font(.caption).foregroundStyle(.orange)
-                    Text(reminder.title.isEmpty ? reminder.screenshot.category.rawValue : reminder.title).lineLimit(1).font(.subheadline.weight(.medium))
+                    Text(reminder.title.isEmpty ? reminder.screenshot.category.title : reminder.title).lineLimit(1).font(.subheadline.weight(.medium))
                 }
                 Text(reminder.subtitle).font(.caption).foregroundStyle(.secondary).lineLimit(2)
             }
@@ -269,7 +269,7 @@ struct CategoryView: View {
     var body: some View {
         let list = model.items(in: category).filter { showDone || !$0.isDone }
         List(list) { s in NavigationLink(value: s) { ScreenshotRow(shot: s) } }
-            .navigationTitle(category.rawValue)
+            .navigationTitle(category.title)
             .toolbar { Toggle("Разобранные", isOn: $showDone).toggleStyle(.button).font(.caption) }
             .overlay { if list.isEmpty { ContentUnavailableView("Пусто", systemImage: category.symbol) } }
     }
