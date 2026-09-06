@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Recall находит скриншоты в вашей галерее и распознаёт на них текст — на устройстве, без отправки в сеть.</string>
+	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+	<string>Чтобы добавлять события из скриншотов — билеты, брони, встречи — в календарь.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>processing</string>
+	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>tel</string>
+		<string>maps</string>
+	</array>
+</dict>
+</plist>
