@@ -8,9 +8,15 @@ import UIKit
 @MainActor
 final class AppModel: ObservableObject {
     @Published var authorization: PHAuthorizationStatus = .notDetermined
-    @Published var items: [String: Screenshot] = [:]
+    @Published var items: [String: Screenshot] = [:] { didSet { itemsVersion &+= 1 } }
+    /// Растёт при любой правке карточек — по нему сбрасываем тяжёлые вычисления.
+    private var itemsVersion = 0
     @Published var isScanning = false
     @Published var progress: (done: Int, total: Int) = (0, 0)
+    /// Скан прервали, не дойдя до конца: показываем «Продолжить».
+    @Published var wasInterrupted = false
+    /// Сколько кадров осталось на момент остановки.
+    @Published var remaining = 0
     @Published var search = ""
     @Published var includeAllPhotos = false
 
@@ -85,17 +91,21 @@ final class AppModel: ObservableObject {
     func scan() {
         guard !isScanning else { return }
         isScanning = true
+        wasInterrupted = false
         scanTask = Task { [weak self] in
             guard let self else { return }
             let assets = library.fetchScreenshots(includeAllPhotos: includeAllPhotos)
             let known = items
-            // Новые и изменённые — остальное из кэша.
+
+            // Новые и изменённые — остальное из кэша. Разобранные раньше кадры
+            // сюда не попадают, поэтому прерванный скан продолжается с того же места.
             let todo = assets.filter { a in
                 guard let k = known[a.localIdentifier], let scanned = k.scannedAt else { return true }
                 if k.isFreed { return false }
                 return (a.modificationDate ?? a.creationDate ?? .distantPast) > scanned
             }
             progress = (0, todo.count)
+
             // Убираем удалённые из галереи.
             // Карточки, которые мы сами освободили, остаются: картинки уже нет,
             // а вытащенные из неё данные — это всё, ради чего скриншот и хранили.
@@ -106,31 +116,67 @@ final class AppModel: ObservableObject {
                 else { items.removeValue(forKey: id) }
             }
 
-            for (i, asset) in todo.enumerated() {
+            // Публикуем результаты пачками: каждая запись в items пересобирает
+            // полки, напоминания и повторы, и на каждом кадре это заметно тормозит.
+            var batch: [Screenshot] = []
+            var doneCount = 0
+
+            for asset in todo {
                 if Task.isCancelled { break }
-                var shot = items[asset.localIdentifier] ?? Screenshot(id: asset.localIdentifier, createdAt: asset.creationDate ?? Date(), width: asset.pixelWidth, height: asset.pixelHeight)
-                if let image = await library.image(for: asset) {
-                    shot.phash = Fingerprint.make(image)
-                    let lines = await OCR.recognize(image)
-                    let r = Extractor.analyze(lines: lines)
-                    shot.text = lines.joined(separator: "\n")
-                    shot.category = r.category
-                    shot.confidence = r.confidence
-                    shot.extracted = r.extracted
-                    shot.summary = r.summary
+                let cached = items[asset.localIdentifier]
+                let shot = await analyze(asset, cached: cached)
+                batch.append(shot)
+                doneCount += 1
+                if batch.count >= Self.batchSize {
+                    publish(batch, done: doneCount, total: todo.count)
+                    batch.removeAll(keepingCapacity: true)
                 }
-                shot.scannedAt = Date()
-                items[asset.localIdentifier] = shot
-                progress = (i + 1, todo.count)
-                if i % 10 == 0 { store.save(items) }
             }
-            store.save(items)
+            publish(batch, done: doneCount, total: todo.count)
+
+            wasInterrupted = Task.isCancelled && doneCount < todo.count
+            remaining = max(0, todo.count - doneCount)
             isScanning = false
-            scheduleNotifications()
+            if !wasInterrupted { scheduleNotifications() }
         }
     }
 
-    func cancelScan() { scanTask?.cancel(); isScanning = false }
+    /// Сколько кадров публикуем за раз. Больше — меньше перерисовок,
+    /// но реже видно движение полосы.
+    private static let batchSize = 8
+
+    /// Публикация пачки: одна перерисовка вместо восьми.
+    private func publish(_ batch: [Screenshot], done: Int, total: Int) {
+        if !batch.isEmpty {
+            for shot in batch { items[shot.id] = shot }
+            store.save(items)
+        }
+        progress = (done, total)
+    }
+
+    /// Разбор одного кадра целиком вне главного потока.
+    private func analyze(_ asset: PHAsset, cached: Screenshot?) async -> Screenshot {
+        var shot = cached ?? Screenshot(id: asset.localIdentifier,
+                                        createdAt: asset.creationDate ?? Date(),
+                                        width: asset.pixelWidth, height: asset.pixelHeight)
+        if let image = await library.image(for: asset) {
+            let lines = await OCR.recognize(image)
+            let hashed = await Task.detached(priority: .utility) { Fingerprint.make(image) }.value
+            let r = await Task.detached(priority: .utility) { Extractor.analyze(lines: lines) }.value
+            shot.phash = hashed
+            shot.text = lines.joined(separator: "\n")
+            shot.category = r.category
+            shot.confidence = r.confidence
+            shot.extracted = r.extracted
+            shot.summary = r.summary
+        }
+        shot.scannedAt = Date()
+        return shot
+    }
+
+    /// Останавливаем скан. Разобранные кадры уже сохранены, поэтому
+    /// следующий запуск продолжит с того места, где остановились.
+    func cancelScan() { scanTask?.cancel() }
 
     // MARK: - Действия
 
@@ -285,9 +331,20 @@ final class AppModel: ObservableObject {
         return common / Double(min(wa.count, wb.count)) >= 0.8
     }
 
+    /// Сравнение всех пар — это O(n²), на тысяче скриншотов миллион сравнений.
+    /// Держим готовый ответ и пересчитываем, только когда карточки изменились.
+    private var duplicateCache: (stamp: Int, groups: [DuplicateGroup])?
+
     /// Серии повторов: у кадра есть отпечаток, картинка ещё в галерее,
     /// раскладка совпадает и текст на кадрах один и тот же.
     var duplicateGroups: [DuplicateGroup] {
+        if let c = duplicateCache, c.stamp == itemsVersion { return c.groups }
+        let groups = computeDuplicateGroups()
+        duplicateCache = (itemsVersion, groups)
+        return groups
+    }
+
+    private func computeDuplicateGroups() -> [DuplicateGroup] {
         let pool = all.filter { !$0.isFreed && $0.phash != nil }
             .sorted { $0.createdAt > $1.createdAt }
         var used = Set<String>()

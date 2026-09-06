@@ -55,14 +55,34 @@ struct HomeView: View {
         List {
             if model.isScanning {
                 Section {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(spacing: 12) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Читаю скриншоты…").font(.subheadline.weight(.medium))
+                                Text("\(model.progress.done) из \(model.progress.total)")
+                                    .font(.caption).foregroundStyle(.secondary).monospacedDigit()
+                            }
+                            Spacer()
+                            Button("Пауза") { model.cancelScan() }.font(.caption.weight(.semibold))
+                        }
+                        if model.progress.total > 0 {
+                            ProgressView(value: Double(model.progress.done),
+                                         total: Double(model.progress.total))
+                        }
+                    }
+                    .padding(.vertical, 2)
+                }
+            } else if model.wasInterrupted {
+                Section {
                     HStack(spacing: 12) {
-                        ProgressView()
+                        Image(systemName: "pause.circle").foregroundStyle(.orange).frame(width: 28)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Читаю скриншоты…").font(.subheadline.weight(.medium))
-                            Text("\(model.progress.done) из \(model.progress.total)").font(.caption).foregroundStyle(.secondary)
+                            Text("Сканирование на паузе").font(.subheadline.weight(.medium))
+                            Text("Осталось \(model.remaining) — разобранное сохранено")
+                                .font(.caption).foregroundStyle(.secondary)
                         }
                         Spacer()
-                        Button("Стоп") { model.cancelScan() }.font(.caption)
+                        Button("Продолжить") { model.scan() }.font(.caption.weight(.semibold))
                     }
                 }
             }

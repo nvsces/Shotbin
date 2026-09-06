@@ -3,6 +3,38 @@ import XCTest
 /// Сквозной прогон в симуляторе: даёт доступ к фото, ждёт распознавание,
 /// проходит по экранам и снимает скриншоты.
 final class RecallUITests: XCTestCase {
+    /// Пауза посреди скана и продолжение с того же места.
+    func testPauseAndResume() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-autoRequest"]
+        app.launch()
+
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        for title in ["Разрешить полный доступ", "Allow Full Access"] {
+            let b = springboard.buttons[title]
+            if b.waitForExistence(timeout: 8) { b.tap(); break }
+        }
+
+        let pause = app.buttons["Пауза"]
+        XCTAssertTrue(pause.waitForExistence(timeout: 20), "во время скана должна быть кнопка паузы")
+        // интерфейс жив во время скана: кнопка отвечает без ожидания
+        pause.tap()
+
+        let resume = app.buttons["Продолжить"]
+        XCTAssertTrue(resume.waitForExistence(timeout: 15), "после паузы предлагаем продолжить")
+        let leftText = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Осталось'")).firstMatch
+        XCTAssertTrue(leftText.exists, "показываем, сколько осталось")
+        shot("paused")
+
+        resume.tap()
+        // скан заканчивается сам, и «Продолжить» больше не появляется
+        let gone = NSPredicate(format: "exists == false")
+        wait(for: [expectation(for: gone, evaluatedWith: app.buttons["Пауза"])], timeout: 180)
+        XCTAssertFalse(app.buttons["Продолжить"].exists, "после завершения паузы нет")
+        sleep(1)
+        shot("resumed")
+    }
+
     /// Скриншоты кладём во вложения теста; достать: xcrun xcresulttool export attachments.
     private func shot(_ name: String) {
         let a = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
