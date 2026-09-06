@@ -85,6 +85,13 @@ struct Screenshot: Codable, Identifiable, Hashable, Sendable {
     var isDone: Bool = false    // пользователь отметил «разобрался»
     var isHidden: Bool = false
     var scannedAt: Date? = nil
+    /// Картинку удалили из галереи, а разобранные данные оставили. Такая карточка
+    /// живёт дальше без превью и не воскресает при следующем скане.
+    var isFreed: Bool = false
+    var freedAt: Date? = nil
+    var freedBytes: Int64 = 0
+    /// Копия миниатюры в JPEG — чтобы карточка после уборки не была пустой.
+    var thumbnailData: Data? = nil
 
     static func == (a: Screenshot, b: Screenshot) -> Bool { a.id == b.id }
     func hash(into h: inout Hasher) { h.combine(id) }
@@ -95,6 +102,9 @@ struct Screenshot: Codable, Identifiable, Hashable, Sendable {
     var upcomingDate: Date? {
         extracted.compactMap(\.date).filter { $0 > Date() }.min()
     }
+
+    /// Есть ли ради чего хранить карточку после удаления картинки.
+    var hasValue: Bool { !extracted.isEmpty || !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
 }
 
 /// Напоминание, собранное из содержимого.

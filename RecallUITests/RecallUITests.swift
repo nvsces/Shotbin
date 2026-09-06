@@ -45,6 +45,57 @@ final class RecallUITests: XCTestCase {
         let reminders = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Все напоминания'")).firstMatch
         if reminders.exists { reminders.tap(); sleep(1); shot("reminders"); app.navigationBars.buttons.element(boundBy: 0).tap() }
 
+        // уборка: отмечаем «разобрался» на первой карточке, чтобы появился кандидат
+        let shelf2 = app.cells.containing(.staticText, identifier: "Рецепты").firstMatch
+        if shelf2.waitForExistence(timeout: 5) {
+            shelf2.tap(); sleep(1)
+            let first = app.cells.firstMatch
+            if first.waitForExistence(timeout: 5) {
+                first.tap(); sleep(2)
+                let done = app.buttons["Разобрался"]
+                if done.waitForExistence(timeout: 5) { done.tap(); sleep(1) }
+            }
+            app.navigationBars.buttons.element(boundBy: 0).tap(); sleep(1)
+        }
+        let cleanup = app.cells.containing(.staticText, identifier: "Освободить место").firstMatch
+        if cleanup.waitForExistence(timeout: 5) {
+            cleanup.tap(); sleep(3); shot("cleanup")
+            let free = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Освободить '")).firstMatch
+            if free.waitForExistence(timeout: 5) {
+                free.tap(); sleep(1)
+                let confirm = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Удалить и освободить'")).firstMatch
+                if confirm.waitForExistence(timeout: 5) {
+                    confirm.tap()
+                    for label in ["Delete", "Удалить"] {
+                        let b = springboard.buttons[label]
+                        if b.waitForExistence(timeout: 8) { b.tap(); break }
+                    }
+                    sleep(5); shot("cleanup-done")
+                }
+            }
+            app.navigationBars.buttons.element(boundBy: 0).tap(); sleep(1)
+        }
+
+        // карточка, у которой картинку уже удалили: данные должны остаться
+        let menu = app.navigationBars.buttons.element(boundBy: app.navigationBars.buttons.count - 1)
+        if menu.waitForExistence(timeout: 5) {
+            menu.tap(); sleep(1)
+            let doneItem = app.descendants(matching: .any).matching(NSPredicate(format: "label == 'Разобранное'")).firstMatch
+            if doneItem.waitForExistence(timeout: 5) {
+                doneItem.tap(); sleep(2)
+                shot("freed-list")
+                let first = app.cells.containing(.staticText, identifier: "Шакшука за 20 минут").firstMatch
+                if first.waitForExistence(timeout: 5) {
+                    first.tap(); sleep(3)
+                    shot("freed-detail")
+                    XCTAssertTrue(app.staticTexts["Место освобождено"].waitForExistence(timeout: 5),
+                                  "карточка должна пережить удаление картинки")
+                }
+                app.navigationBars.buttons.element(boundBy: 0).tap(); sleep(1)
+                app.navigationBars.buttons.element(boundBy: 0).tap(); sleep(1)
+            }
+        }
+
         // поиск
         let search = app.searchFields.firstMatch
         if search.waitForExistence(timeout: 5) {

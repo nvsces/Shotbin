@@ -38,6 +38,16 @@ final class AppModel: ObservableObject {
         return all.filter { $0.text.lowercased().contains(q) || $0.summary.lowercased().contains(q) }
     }
 
+    /// Подпись над полками: сколько ещё не разобрано и сколько карточек живёт
+    /// без картинки — иначе после уборки счётчик выглядит так, будто ничего не удалили.
+    var shelfSummary: String {
+        let pending = all.filter { !$0.isDone }.count
+        let freed = freedCount
+        var parts = ["\(pending) скриншотов"]
+        if freed > 0 { parts.append("\(freed) без картинки") }
+        return parts.joined(separator: " · ")
+    }
+
     var categoryCounts: [(Category, Int)] {
         Category.allCases.map { ($0, items(in: $0).filter { !$0.isDone }.count) }.filter { $0.1 > 0 }
     }
@@ -82,12 +92,19 @@ final class AppModel: ObservableObject {
             // Новые и изменённые — остальное из кэша.
             let todo = assets.filter { a in
                 guard let k = known[a.localIdentifier], let scanned = k.scannedAt else { return true }
+                if k.isFreed { return false }
                 return (a.modificationDate ?? a.creationDate ?? .distantPast) > scanned
             }
             progress = (0, todo.count)
             // Убираем удалённые из галереи.
+            // Карточки, которые мы сами освободили, остаются: картинки уже нет,
+            // а вытащенные из неё данные — это всё, ради чего скриншот и хранили.
             let present = Set(assets.map(\.localIdentifier))
-            for id in items.keys where !present.contains(id) { items.removeValue(forKey: id) }
+            for (id, s) in items where !present.contains(id) {
+                if s.isFreed { continue }
+                if s.isDone && s.hasValue { items[id]?.isFreed = true; items[id]?.freedAt = Date() }
+                else { items.removeValue(forKey: id) }
+            }
 
             for (i, asset) in todo.enumerated() {
                 if Task.isCancelled { break }
@@ -122,17 +139,112 @@ final class AppModel: ObservableObject {
     func hide(_ s: Screenshot) { var s = s; s.isHidden = true; update(s) }
 
     func delete(_ s: Screenshot) async {
-        try? await library.delete(ids: [s.id])
+        guard let ok = try? await library.delete(ids: [s.id]), ok else { return }
         items.removeValue(forKey: s.id); store.save(items)
     }
 
+    // MARK: - Уборка галереи
+
+    /// Скриншот отработал: данные вытащены, картинка в галерее больше не нужна.
+    /// Считаем его кандидатом на освобождение места.
+    enum FreeReason: String, CaseIterable, Identifiable, Sendable {
+        case done = "Разобранные"
+        case oldCode = "Коды старше месяца"
+        case pastDate = "Прошедшие даты"
+        case empty = "Без текста"
+        var id: String { rawValue }
+        var hint: String {
+            switch self {
+            case .done: return "Вы отметили «разобрался» — данные уже в карточке"
+            case .oldCode: return "Код или пароль лежит больше месяца"
+            case .pastDate: return "Билет или бронь на дату, которая прошла"
+            case .empty: return "Vision не нашёл текста — разбирать нечего"
+            }
+        }
+    }
+
+    func freeReason(for s: Screenshot) -> FreeReason? {
+        guard !s.isFreed else { return nil }
+        if !s.hasValue, s.scannedAt != nil { return .empty }
+        if s.isDone { return .done }
+        if s.category == .codes, s.ageDays >= 30 { return .oldCode }
+        if [.tickets, .places].contains(s.category),
+           let d = s.extracted.compactMap(\.date).max(), d < Date(), s.upcomingDate == nil { return .pastDate }
+        return nil
+    }
+
+    /// Кандидаты на уборку, сгруппированные по причине.
+    var cleanupGroups: [(FreeReason, [Screenshot])] {
+        var byReason: [FreeReason: [Screenshot]] = [:]
+        for s in all where !s.isFreed {
+            if let r = freeReason(for: s) { byReason[r, default: []].append(s) }
+        }
+        return FreeReason.allCases.compactMap { r in
+            guard let list = byReason[r], !list.isEmpty else { return nil }
+            return (r, list.sorted { $0.createdAt > $1.createdAt })
+        }
+    }
+
+    /// Занимаемое место — считаем один раз и держим в памяти, PHAssetResource небыстрый.
+    @Published private(set) var sizes: [String: Int64] = [:]
+
+    func measure(_ list: [Screenshot]) async {
+        let missing = list.filter { sizes[$0.id] == nil }
+        guard !missing.isEmpty else { return }
+        let lib = library
+        let measured: [(String, Int64)] = await Task.detached(priority: .utility) {
+            missing.compactMap { s in
+                guard let a = lib.asset(id: s.id) else { return nil }
+                return (s.id, lib.fileSize(of: a))
+            }
+        }.value
+        for (id, size) in measured { sizes[id] = size }
+    }
+
+    func totalSize(_ list: [Screenshot]) -> Int64 { list.reduce(0) { $0 + (sizes[$1.id] ?? 0) } }
+
+    /// Освобождает место: сохраняет миниатюру и данные, удаляет картинки одной пачкой.
+    /// Возвращает, сколько байт ушло (0 — пользователь отменил системный запрос).
+    @discardableResult
+    func free(_ list: [Screenshot]) async -> Int64 {
+        guard !list.isEmpty else { return 0 }
+        await measure(list)
+        // Миниатюры снимаем до удаления, иначе карточка останется без превью.
+        for s in list where s.thumbnailData == nil {
+            if let img = await thumbnail(for: s), let data = img.jpegData(compressionQuality: 0.7) {
+                items[s.id]?.thumbnailData = data
+            }
+        }
+        let ids = list.map(\.id)
+        guard let ok = try? await library.delete(ids: ids), ok else { return 0 }
+        var freed: Int64 = 0
+        for id in ids {
+            let size = sizes[id] ?? 0
+            freed += size
+            items[id]?.isFreed = true
+            items[id]?.freedAt = Date()
+            items[id]?.freedBytes = size
+            items[id]?.isDone = true
+        }
+        store.save(items)
+        return freed
+    }
+
+    /// Сколько всего освободили за всё время.
+    var freedTotal: Int64 { items.values.reduce(0) { $0 + $1.freedBytes } }
+    var freedCount: Int { items.values.filter(\.isFreed).count }
+
     func asset(for s: Screenshot) -> PHAsset? { library.asset(id: s.id) }
     func thumbnail(for s: Screenshot) async -> UIImage? {
+        if let data = s.thumbnailData ?? items[s.id]?.thumbnailData { return UIImage(data: data) }
         guard let a = asset(for: s) else { return nil }
         return await library.thumbnail(for: a)
     }
     func fullImage(for s: Screenshot) async -> UIImage? {
-        guard let a = asset(for: s) else { return nil }
+        guard let a = asset(for: s) else {
+            if let data = items[s.id]?.thumbnailData { return UIImage(data: data) }
+            return nil
+        }
         return await library.image(for: a, maxSide: 2400)
     }
 

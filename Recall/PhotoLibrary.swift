@@ -67,10 +67,29 @@ final class PhotoLibrary: @unchecked Sendable {
         }
     }
 
-    func delete(ids: [String]) async throws {
+    /// Сколько занимает файл на диске. PHAssetResource знает точный размер,
+    /// иначе оцениваем по пикселям (скриншот PNG/HEIC — примерно 0.4 байта на пиксель).
+    func fileSize(of asset: PHAsset) -> Int64 {
+        for r in PHAssetResource.assetResources(for: asset) {
+            if let size = r.value(forKey: "fileSize") as? CLong { return Int64(size) }
+        }
+        return Int64(Double(asset.pixelWidth * asset.pixelHeight) * 0.4)
+    }
+
+    /// Удаление пачкой: один системный запрос подтверждения на всю выборку.
+    /// Файлы уходят в «Недавно удалённые» и лежат там 30 дней — откат бесплатный.
+    /// Возвращает false, если пользователь отменил.
+    @discardableResult
+    func delete(ids: [String]) async throws -> Bool {
         let assets = PHAsset.fetchAssets(withLocalIdentifiers: ids, options: nil)
-        try await PHPhotoLibrary.shared().performChanges {
-            PHAssetChangeRequest.deleteAssets(assets)
+        guard assets.count > 0 else { return true }
+        do {
+            try await PHPhotoLibrary.shared().performChanges {
+                PHAssetChangeRequest.deleteAssets(assets)
+            }
+            return true
+        } catch let e as NSError where e.domain == "PHPhotosErrorDomain" && e.code == 3072 {
+            return false   // отменено пользователем
         }
     }
 }

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		87ACE436905158BDB8AD6CA6 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55EB923C56D5AFEA5D197CF /* AppModel.swift */; };
+		0946D44B8906514F80A11314 /* CleanupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F6597638790557686AD7591 /* CleanupView.swift */; };
 		CE9D23F39657525CB59158AB /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88178FAF14065B18B436DB77 /* DetailView.swift */; };
 		F7211C84AFE356E08E55F46D /* Extractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44B1B233F554598D9299EB20 /* Extractor.swift */; };
 		80A75AC6AC205A6D892AC1F3 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 734EAFEC130152DD9E05492D /* Models.swift */; };
@@ -32,6 +33,7 @@
 
 /* Begin PBXFileReference section */
 		C55EB923C56D5AFEA5D197CF /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		6F6597638790557686AD7591 /* CleanupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanupView.swift; sourceTree = "<group>"; };
 		88178FAF14065B18B436DB77 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
 		44B1B233F554598D9299EB20 /* Extractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extractor.swift; sourceTree = "<group>"; };
 		734EAFEC130152DD9E05492D /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				C55EB923C56D5AFEA5D197CF /* AppModel.swift */,
+				6F6597638790557686AD7591 /* CleanupView.swift */,
 				88178FAF14065B18B436DB77 /* DetailView.swift */,
 				44B1B233F554598D9299EB20 /* Extractor.swift */,
 				734EAFEC130152DD9E05492D /* Models.swift */,
@@ -200,6 +203,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				87ACE436905158BDB8AD6CA6 /* AppModel.swift in Sources */,
+				0946D44B8906514F80A11314 /* CleanupView.swift in Sources */,
 				CE9D23F39657525CB59158AB /* DetailView.swift in Sources */,
 				F7211C84AFE356E08E55F46D /* Extractor.swift in Sources */,
 				80A75AC6AC205A6D892AC1F3 /* Models.swift in Sources */,

@@ -14,6 +14,8 @@ struct RootView: View {
                 }
             }
             .navigationTitle("Recall")
+            .navigationDestination(for: Category.self) { CategoryView(category: $0) }
+            .navigationDestination(for: Screenshot.self) { DetailView(shotID: $0.id) }
         }
         .task {
             if model.authorization == .authorized || model.authorization == .limited { model.scan() }
@@ -82,6 +84,21 @@ struct HomeView: View {
                     } header: { Label("Не забыть", systemImage: "bell") }
                 }
 
+                if !model.cleanupGroups.isEmpty {
+                    Section {
+                        NavigationLink { CleanupView() } label: {
+                            HStack(spacing: 12) {
+                                Image(systemName: "internaldrive").foregroundStyle(.green).frame(width: 28)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Освободить место").font(.subheadline.weight(.medium))
+                                    Text("\(model.cleanupGroups.reduce(0) { $0 + $1.1.count }) скриншотов отработали — можно удалить из галереи")
+                                        .font(.caption).foregroundStyle(.secondary).lineLimit(2)
+                                }
+                            }
+                        }
+                    }
+                }
+
                 Section {
                     ForEach(model.categoryCounts, id: \.0) { cat, n in
                         NavigationLink(value: cat) {
@@ -94,7 +111,11 @@ struct HomeView: View {
                         }
                     }
                 } header: {
-                    HStack { Text("Полки"); Spacer(); Text("\(model.all.filter { !$0.isDone }.count) скриншотов").textCase(nil) }
+                    HStack {
+                        Text("Полки")
+                        Spacer()
+                        Text(model.shelfSummary).textCase(nil)
+                    }
                 } footer: {
                     if model.all.isEmpty && !model.isScanning {
                         Text("Скриншотов не найдено. Потяните вниз, чтобы пересканировать.")
@@ -104,13 +125,12 @@ struct HomeView: View {
         }
         .searchable(text: $model.search, prompt: "Слово со скриншота")
         .refreshable { model.scan() }
-        .navigationDestination(for: Category.self) { CategoryView(category: $0) }
-        .navigationDestination(for: Screenshot.self) { DetailView(shotID: $0.id) }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
                     Button { model.scan() } label: { Label("Пересканировать", systemImage: "arrow.clockwise") }
                     NavigationLink { DoneView() } label: { Label("Разобранное", systemImage: "checkmark.circle") }
+                    NavigationLink { CleanupView() } label: { Label("Уборка галереи", systemImage: "internaldrive") }
                     #if targetEnvironment(simulator)
                     Toggle("Все фото (симулятор)", isOn: $model.includeAllPhotos)
                     #endif
@@ -124,7 +144,7 @@ struct ReminderRow: View {
     let reminder: Reminder
     var body: some View {
         HStack(spacing: 12) {
-            Thumb(shotID: reminder.screenshot.id).frame(width: 44, height: 60)
+            Thumb(shotID: reminder.screenshot.id).frame(width: 44, height: 60).clipped()
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 4) {
                     Image(systemName: reminder.symbol).font(.caption).foregroundStyle(.orange)
@@ -132,6 +152,7 @@ struct ReminderRow: View {
                 }
                 Text(reminder.subtitle).font(.caption).foregroundStyle(.secondary).lineLimit(2)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
@@ -140,18 +161,22 @@ struct ScreenshotRow: View {
     let shot: Screenshot
     var body: some View {
         HStack(spacing: 12) {
-            Thumb(shotID: shot.id).frame(width: 44, height: 60)
+            Thumb(shotID: shot.id).frame(width: 44, height: 60).clipped()
             VStack(alignment: .leading, spacing: 3) {
-                Text(shot.summary.isEmpty ? "Без текста" : shot.summary).lineLimit(2).font(.subheadline)
+                Text(shot.summary.isEmpty ? "Без текста" : shot.summary)
+                    .lineLimit(2).font(.subheadline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 HStack(spacing: 6) {
                     Text(shot.createdAt, style: .date)
                     ForEach(shot.extracted.prefix(3)) { e in
                         Image(systemName: e.symbol)
                     }
                 }.font(.caption).foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            Spacer()
-            if shot.isDone { Image(systemName: "checkmark.circle.fill").foregroundStyle(.green) }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            if shot.isFreed { Image(systemName: "internaldrive").foregroundStyle(.secondary) }
+            else if shot.isDone { Image(systemName: "checkmark.circle.fill").foregroundStyle(.green) }
         }
     }
 }
@@ -162,11 +187,22 @@ struct Thumb: View {
     let shotID: String
     @State private var image: UIImage?
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 6).fill(Color(.secondarySystemFill))
-            if let image { Image(uiImage: image).resizable().aspectRatio(contentMode: .fill) }
+        // scaledToFill без clipped() внутри GeometryReader растягивает картинку
+        // за пределы кадра и она наезжает на текст — обрезаем по своим границам.
+        GeometryReader { geo in
+            ZStack {
+                RoundedRectangle(cornerRadius: 6).fill(Color(.secondarySystemFill))
+                if let image {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: geo.size.width, height: geo.size.height)
+                        .clipped()
+                }
+            }
+            .frame(width: geo.size.width, height: geo.size.height)
+            .clipShape(RoundedRectangle(cornerRadius: 6))
         }
-        .clipShape(RoundedRectangle(cornerRadius: 6))
         .task(id: shotID) {
             if let s = model.items[shotID] { image = await model.thumbnail(for: s) }
         }
@@ -197,7 +233,10 @@ struct RemindersView: View {
 struct DoneView: View {
     @EnvironmentObject var model: AppModel
     var body: some View {
-        List(model.all.filter(\.isDone)) { s in NavigationLink(value: s) { ScreenshotRow(shot: s) } }
-            .navigationTitle("Разобранное")
+        List(model.all.filter(\.isDone)) { s in
+            NavigationLink { DetailView(shotID: s.id) } label: { ScreenshotRow(shot: s) }
+        }
+        .navigationTitle("Разобранное")
+        .overlay { if model.all.filter(\.isDone).isEmpty { ContentUnavailableView("Пока пусто", systemImage: "checkmark.circle") } }
     }
 }

@@ -63,16 +63,29 @@ struct DetailView: View {
                     }
                     .font(.subheadline)
 
-                    HStack(spacing: 10) {
-                        Button { model.markDone(shot, !shot.isDone); if !shot.isDone { dismiss() } } label: {
-                            Label(shot.isDone ? "Вернуть" : "Разобрался", systemImage: shot.isDone ? "arrow.uturn.left" : "checkmark")
-                                .frame(maxWidth: .infinity)
+                    if shot.isFreed {
+                        HStack(spacing: 8) {
+                            Image(systemName: "internaldrive").foregroundStyle(.green)
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text("Место освобождено").font(.subheadline.weight(.medium))
+                                Text(freedNote(shot)).font(.caption).foregroundStyle(.secondary)
+                            }
+                            Spacer()
                         }
-                        .buttonStyle(.borderedProminent).controlSize(.large)
-                        Button(role: .destructive) { confirmDelete = true } label: {
-                            Image(systemName: "trash").frame(width: 44)
+                        .padding(12)
+                        .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 10))
+                    } else {
+                        HStack(spacing: 10) {
+                            Button { model.markDone(shot, !shot.isDone); if !shot.isDone { dismiss() } } label: {
+                                Label(shot.isDone ? "Вернуть" : "Разобрался", systemImage: shot.isDone ? "arrow.uturn.left" : "checkmark")
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.borderedProminent).controlSize(.large)
+                            Button(role: .destructive) { confirmDelete = true } label: {
+                                Image(systemName: "trash").frame(width: 44)
+                            }
+                            .buttonStyle(.bordered).controlSize(.large)
                         }
-                        .buttonStyle(.bordered).controlSize(.large)
                     }
                 }
                 .padding()
@@ -80,11 +93,20 @@ struct DetailView: View {
             .navigationBarTitleDisplayMode(.inline)
             .task { image = await model.fullImage(for: shot) }
             .confirmationDialog("Удалить скриншот из галереи?", isPresented: $confirmDelete, titleVisibility: .visible) {
-                Button("Удалить", role: .destructive) { Task { await model.delete(shot); dismiss() } }
-            } message: { Text("Попадёт в «Недавно удалённые» на 30 дней.") }
+                Button("Удалить, данные оставить", role: .destructive) { Task { await model.free([shot]); dismiss() } }
+                Button("Удалить вместе с карточкой", role: .destructive) { Task { await model.delete(shot); dismiss() } }
+                Button("Отмена", role: .cancel) {}
+            } message: { Text("Картинка попадёт в «Недавно удалённые» на 30 дней. Распознанный текст и находки можно оставить в Recall.") }
         } else {
             ContentUnavailableView("Скриншот удалён", systemImage: "photo")
         }
+    }
+
+    private func freedNote(_ shot: Screenshot) -> String {
+        let size = shot.freedBytes > 0 ? ByteCountFormatter.string(fromByteCount: shot.freedBytes, countStyle: .file) : nil
+        let when = shot.freedAt?.formatted(date: .abbreviated, time: .omitted)
+        return [size.map { "Вернули \($0)" }, when.map { "Картинки нет с \($0)" }]
+            .compactMap { $0 }.joined(separator: " · ")
     }
 
     private func act(_ e: Extracted, _ shot: Screenshot) {
