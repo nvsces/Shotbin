@@ -1,8 +1,8 @@
 import AppKit
 
-// App Store для 6.9" (iPhone 17 Pro Max и аналоги) ждёт 1320×2868.
+// App Store Connect принимает набор 6.5" — 1284×2778.
 // Кадр из симулятора 1206×2622 вписываем в макет с заголовком.
-let outW = 1320.0, outH = 2868.0
+let outW = 1284.0, outH = 2778.0
 
 struct Slide { let file: String, title: String, subtitle: String }
 
@@ -22,17 +22,17 @@ func make(_ slide: Slide, out: String, accent: NSColor) {
     let tAttrs: [NSAttributedString.Key: Any] = [
         .font: NSFont.systemFont(ofSize: 76, weight: .bold),
         .foregroundColor: NSColor(white: 0.08, alpha: 1), .paragraphStyle: para]
-    (slide.title as NSString).draw(in: NSRect(x: pad, y: outH - 300, width: outW - pad*2, height: 190),
+    (slide.title as NSString).draw(in: NSRect(x: pad, y: outH - 292, width: outW - pad*2, height: 190),
                                    withAttributes: tAttrs)
     let sAttrs: [NSAttributedString.Key: Any] = [
         .font: NSFont.systemFont(ofSize: 42, weight: .regular),
         .foregroundColor: NSColor(white: 0.35, alpha: 1), .paragraphStyle: para]
-    (slide.subtitle as NSString).draw(in: NSRect(x: pad, y: outH - 386, width: outW - pad*2, height: 80),
+    (slide.subtitle as NSString).draw(in: NSRect(x: pad, y: outH - 376, width: outW - pad*2, height: 80),
                                       withAttributes: sAttrs)
 
     // сам экран: масштабируем по ширине, скругляем углы, кладём тень
     // Высота под экран: от низа заголовка до нижнего поля.
-    let top = outH - 440.0, bottom = 90.0
+    let top = outH - 430.0, bottom = 86.0
     let maxH = top - bottom
     let byWidth = (outW - pad * 2) / shot.size.width
     let scale = min(byWidth, maxH / shot.size.height)
