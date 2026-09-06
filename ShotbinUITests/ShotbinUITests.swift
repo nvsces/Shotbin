@@ -3,6 +3,52 @@ import XCTest
 /// Сквозной прогон в симуляторе: даёт доступ к фото, ждёт распознавание,
 /// проходит по экранам и снимает скриншоты.
 final class ShotbinUITests: XCTestCase {
+    /// Раздел фотографий: отдельный запуск, поиск серий, удаление лишних.
+    func testPhotosSection() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-autoRequest"]
+        app.launch()
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        for title in ["Разрешить полный доступ", "Allow Full Access"] {
+            let b = springboard.buttons[title]
+            if b.waitForExistence(timeout: 8) { b.tap(); break }
+        }
+        let scanning = app.staticTexts["Читаю скриншоты…"]
+        _ = scanning.waitForExistence(timeout: 15)
+        wait(for: [expectation(for: NSPredicate(format: "exists == false"), evaluatedWith: scanning)], timeout: 180)
+        sleep(2)
+
+        let entry = app.cells.containing(.staticText, identifier: "Фотографии").firstMatch
+        XCTAssertTrue(entry.waitForExistence(timeout: 10), "на главном есть раздел фотографий")
+        entry.tap(); sleep(1)
+        shot("photos-start")
+
+        // раздел не сканирует сам — запускает пользователь
+        let start = app.buttons["Начать"]
+        XCTAssertTrue(start.waitForExistence(timeout: 5), "проверка запускается вручную")
+        start.tap()
+
+        let busy = app.staticTexts["Сравниваю фотографии…"]
+        _ = busy.waitForExistence(timeout: 10)
+        wait(for: [expectation(for: NSPredicate(format: "exists == false"), evaluatedWith: busy)], timeout: 180)
+        sleep(2)
+        shot("photos-result")
+
+        let del = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Удалить '")).firstMatch
+        if del.waitForExistence(timeout: 5) {
+            del.tap(); sleep(1)
+            let confirm = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Удалить и освободить'")).firstMatch
+            if confirm.waitForExistence(timeout: 5) {
+                confirm.tap()
+                for label in ["Delete", "Удалить"] {
+                    let b = springboard.buttons[label]
+                    if b.waitForExistence(timeout: 8) { b.tap(); break }
+                }
+                sleep(4); shot("photos-done")
+            }
+        }
+    }
+
     /// Пауза посреди скана и продолжение с того же места.
     func testPauseAndResume() {
         let app = XCUIApplication()

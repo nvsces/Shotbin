@@ -18,7 +18,9 @@ final class AppModel: ObservableObject {
     /// Сколько кадров осталось на момент остановки.
     @Published var remaining = 0
     @Published var search = ""
-    @Published var includeAllPhotos = false
+
+    /// Сколько картинок в галерее всего и сколько из них помечены как скриншоты.
+    @Published var libraryCounts: (all: Int, screenshots: Int) = (0, 0)
 
     private let store = Store()
     private let library = PhotoLibrary.shared
@@ -27,9 +29,6 @@ final class AppModel: ObservableObject {
     init() {
         authorization = library.status
         items = store.load()
-        #if targetEnvironment(simulator)
-        includeAllPhotos = true
-        #endif
     }
 
     // MARK: - Выборки
@@ -46,6 +45,26 @@ final class AppModel: ObservableObject {
 
     /// Подпись над полками: сколько ещё не разобрано и сколько карточек живёт
     /// без картинки — иначе после уборки счётчик выглядит так, будто ничего не удалили.
+    /// Объяснение, почему разобрано меньше, чем лежит в галерее.
+    var libraryNote: String {
+        let (all, shots) = libraryCounts
+        guard all > 0 else { return "" }
+        let rest = max(0, all - shots)
+        guard rest > 0 else { return "В галерее \(all) картинок, все помечены как снимки экрана." }
+        return "В галерее \(all) картинок. Снимков экрана среди них \(shots) — их и разбираем. Остальные \(rest) фото можно проверить на повторы отдельно."
+    }
+
+    /// Подпись у входа в раздел фотографий.
+    func photosNote(scanner: PhotoScanner) -> String {
+        if scanner.isScanning { return "Сравниваю: \(scanner.progress.done) из \(scanner.progress.total)" }
+        if scanner.neverScanned {
+            let rest = max(0, libraryCounts.all - libraryCounts.screenshots)
+            return rest > 0 ? "Проверить \(rest) фото на повторы" : "Проверить фото на повторы"
+        }
+        if scanner.dropCount > 0 { return "\(scanner.dropCount) повторов среди \(scanner.scannedCount) фото" }
+        return "Повторов нет · проверено \(scanner.scannedCount)"
+    }
+
     var shelfSummary: String {
         let pending = all.filter { !$0.isDone }.count
         let freed = freedCount
@@ -97,7 +116,8 @@ final class AppModel: ObservableObject {
         wasInterrupted = false
         scanTask = Task { [weak self] in
             guard let self else { return }
-            let assets = library.fetchScreenshots(includeAllPhotos: includeAllPhotos)
+            libraryCounts = library.counts()
+            let assets = library.fetchScreenshots()
             let known = items
 
             // Новые и изменённые — остальное из кэша. Разобранные раньше кадры

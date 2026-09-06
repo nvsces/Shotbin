@@ -98,7 +98,7 @@ struct DuplicatesView: View {
         } message: {
             Text("В каждой серии останется выбранный кадр. Остальные система положит в «Недавно удалённые» на 30 дней.")
         }
-        .task { await model.measure(groups.flatMap(\.all)) }
+        .task(id: groups.map(\.id).joined()) { await model.measure(groups.flatMap(\.all)) }
         .overlay(alignment: .top) {
             if freedNow > 0 {
                 Label("Освободили \(bytes(freedNow))", systemImage: "checkmark.circle.fill")

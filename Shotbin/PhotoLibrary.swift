@@ -14,20 +14,52 @@ final class PhotoLibrary: @unchecked Sendable {
         await PHPhotoLibrary.requestAuthorization(for: .readWrite)
     }
 
-    /// Все скриншоты, новые первыми. В симуляторе скриншотов нет —
-    /// там подхватываем любые фото, чтобы можно было отлаживать.
-    func fetchScreenshots(includeAllPhotos: Bool = false) -> [PHAsset] {
+    /// Сколько в галерее всего картинок и сколько из них помечены как скриншоты.
+    /// Пересланный или скачанный скриншот метку теряет, поэтому числа расходятся.
+    func counts() -> (all: Int, screenshots: Int) {
+        let all = PHAsset.fetchAssets(with: .image, options: nil).count
+        let opts = PHFetchOptions()
+        opts.predicate = NSPredicate(format: "(mediaSubtype & %d) != 0", PHAssetMediaSubtype.photoScreenshot.rawValue)
+        return (all, PHAsset.fetchAssets(with: .image, options: opts).count)
+    }
+
+    /// Все скриншоты, новые первыми.
+    func fetchScreenshots() -> [PHAsset] { fetch(screenshots: true) }
+
+    /// Всё, что не помечено как снимок экрана: обычные фотографии.
+    /// Их разбирает отдельный раздел и только на повторы.
+    func photosOnly() -> [PHAsset] { fetch(screenshots: false) }
+
+    /// В симуляторе системная метка «снимок экрана» не проставляется ни одному
+    /// кадру, поэтому там разделяем по пропорциям: телефонный скриншот заметно
+    /// вытянут. На устройстве работает штатный признак.
+    private func fetch(screenshots: Bool) -> [PHAsset] {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        if !includeAllPhotos {
-            options.predicate = NSPredicate(format: "(mediaSubtype & %d) != 0", PHAssetMediaSubtype.photoScreenshot.rawValue)
-        }
+        #if !targetEnvironment(simulator)
+        options.predicate = NSPredicate(format: "(mediaSubtype & %d) \(screenshots ? "!=" : "==") 0",
+                                        PHAssetMediaSubtype.photoScreenshot.rawValue)
+        #endif
         let result = PHAsset.fetchAssets(with: .image, options: options)
         var assets: [PHAsset] = []
         assets.reserveCapacity(result.count)
-        result.enumerateObjects { asset, _, _ in assets.append(asset) }
+        result.enumerateObjects { asset, _, _ in
+            #if targetEnvironment(simulator)
+            guard Self.looksLikeScreenshot(asset) == screenshots else { return }
+            #endif
+            assets.append(asset)
+        }
         return assets
     }
+
+    #if targetEnvironment(simulator)
+    /// Признак скриншота для симулятора: вытянутый кадр телефонных пропорций.
+    private static func looksLikeScreenshot(_ a: PHAsset) -> Bool {
+        guard a.pixelWidth > 0, a.pixelHeight > 0 else { return false }
+        let ratio = Double(a.pixelHeight) / Double(a.pixelWidth)
+        return ratio > 1.7 && ratio < 2.4
+    }
+    #endif
 
     func asset(id: String) -> PHAsset? {
         PHAsset.fetchAssets(withLocalIdentifiers: [id], options: nil).firstObject

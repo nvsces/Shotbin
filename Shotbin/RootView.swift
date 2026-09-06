@@ -50,6 +50,7 @@ struct RootView: View {
 
 struct HomeView: View {
     @EnvironmentObject var model: AppModel
+    @EnvironmentObject var photos: PhotoScanner
 
     var body: some View {
         List {
@@ -119,6 +120,19 @@ struct HomeView: View {
                     }
                 }
 
+                Section {
+                    NavigationLink { PhotosView() } label: {
+                        HStack(spacing: 12) {
+                            Image(systemName: "photo.stack").foregroundStyle(.purple).frame(width: 28)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Фотографии").font(.subheadline.weight(.medium))
+                                Text(model.photosNote(scanner: photos))
+                                    .font(.caption).foregroundStyle(.secondary).lineLimit(2)
+                            }
+                        }
+                    }
+                }
+
                 if !model.cleanupGroups.isEmpty {
                     Section {
                         NavigationLink { CleanupView() } label: {
@@ -152,9 +166,15 @@ struct HomeView: View {
                         Text(model.shelfSummary).textCase(nil)
                     }
                 } footer: {
-                    if model.all.isEmpty && !model.isScanning {
-                        Text("Скриншотов не найдено. Потяните вниз, чтобы пересканировать.")
+                    VStack(alignment: .leading, spacing: 6) {
+                        if model.all.isEmpty && !model.isScanning {
+                            Text("Скриншотов не найдено. Потяните вниз, чтобы пересканировать.")
+                        }
+                        if model.libraryCounts.all > 0 {
+                            Text(model.libraryNote)
+                        }
                     }
+                    .textCase(nil)
                 }
             }
         }
@@ -167,9 +187,6 @@ struct HomeView: View {
                     NavigationLink { DoneView() } label: { Label("Разобранное", systemImage: "checkmark.circle") }
                     NavigationLink { CleanupView() } label: { Label("Уборка галереи", systemImage: "internaldrive") }
                     NavigationLink { DuplicatesView() } label: { Label("Повторы", systemImage: "square.on.square.dashed") }
-                    #if targetEnvironment(simulator)
-                    Toggle("Все фото (симулятор)", isOn: $model.includeAllPhotos)
-                    #endif
                 } label: { Image(systemName: "ellipsis.circle") }
             }
         }
