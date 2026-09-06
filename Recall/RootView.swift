@@ -84,6 +84,21 @@ struct HomeView: View {
                     } header: { Label("Не забыть", systemImage: "bell") }
                 }
 
+                if !model.duplicateGroups.isEmpty {
+                    Section {
+                        NavigationLink { DuplicatesView() } label: {
+                            HStack(spacing: 12) {
+                                Image(systemName: "square.on.square.dashed").foregroundStyle(.orange).frame(width: 28)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Повторы").font(.subheadline.weight(.medium))
+                                    Text("\(model.duplicateDropCount) почти одинаковых кадров в \(model.duplicateGroups.count) сериях")
+                                        .font(.caption).foregroundStyle(.secondary).lineLimit(2)
+                                }
+                            }
+                        }
+                    }
+                }
+
                 if !model.cleanupGroups.isEmpty {
                     Section {
                         NavigationLink { CleanupView() } label: {
@@ -131,6 +146,7 @@ struct HomeView: View {
                     Button { model.scan() } label: { Label("Пересканировать", systemImage: "arrow.clockwise") }
                     NavigationLink { DoneView() } label: { Label("Разобранное", systemImage: "checkmark.circle") }
                     NavigationLink { CleanupView() } label: { Label("Уборка галереи", systemImage: "internaldrive") }
+                    NavigationLink { DuplicatesView() } label: { Label("Повторы", systemImage: "square.on.square.dashed") }
                     #if targetEnvironment(simulator)
                     Toggle("Все фото (симулятор)", isOn: $model.includeAllPhotos)
                     #endif

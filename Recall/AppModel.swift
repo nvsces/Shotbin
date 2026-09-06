@@ -110,6 +110,7 @@ final class AppModel: ObservableObject {
                 if Task.isCancelled { break }
                 var shot = items[asset.localIdentifier] ?? Screenshot(id: asset.localIdentifier, createdAt: asset.creationDate ?? Date(), width: asset.pixelWidth, height: asset.pixelHeight)
                 if let image = await library.image(for: asset) {
+                    shot.phash = Fingerprint.make(image)
                     let lines = await OCR.recognize(image)
                     let r = Extractor.analyze(lines: lines)
                     shot.text = lines.joined(separator: "\n")
@@ -205,14 +206,19 @@ final class AppModel: ObservableObject {
 
     /// Освобождает место: сохраняет миниатюру и данные, удаляет картинки одной пачкой.
     /// Возвращает, сколько байт ушло (0 — пользователь отменил системный запрос).
+    ///
+    /// `keepCards` = false для повторов: там кадр дублирует другой, оставшийся
+    /// в галерее, и карточка-двойник в списках только мешает.
     @discardableResult
-    func free(_ list: [Screenshot]) async -> Int64 {
+    func free(_ list: [Screenshot], keepCards: Bool = true) async -> Int64 {
         guard !list.isEmpty else { return 0 }
         await measure(list)
-        // Миниатюры снимаем до удаления, иначе карточка останется без превью.
-        for s in list where s.thumbnailData == nil {
-            if let img = await thumbnail(for: s), let data = img.jpegData(compressionQuality: 0.7) {
-                items[s.id]?.thumbnailData = data
+        if keepCards {
+            // Миниатюры снимаем до удаления, иначе карточка останется без превью.
+            for s in list where s.thumbnailData == nil {
+                if let img = await thumbnail(for: s), let data = img.jpegData(compressionQuality: 0.7) {
+                    items[s.id]?.thumbnailData = data
+                }
             }
         }
         let ids = list.map(\.id)
@@ -221,17 +227,108 @@ final class AppModel: ObservableObject {
         for id in ids {
             let size = sizes[id] ?? 0
             freed += size
-            items[id]?.isFreed = true
-            items[id]?.freedAt = Date()
-            items[id]?.freedBytes = size
-            items[id]?.isDone = true
+            if keepCards {
+                items[id]?.isFreed = true
+                items[id]?.freedAt = Date()
+                items[id]?.freedBytes = size
+                items[id]?.isDone = true
+            } else {
+                items.removeValue(forKey: id)
+                duplicatesFreedBytes += size
+                duplicatesRemoved += 1
+            }
         }
         store.save(items)
         return freed
     }
 
+    /// Итог по повторам держим отдельно: карточек этих кадров уже нет,
+    /// поэтому суммы живут в UserDefaults, а не в самих карточках.
+    var duplicatesFreedBytes: Int64 {
+        get { Int64(UserDefaults.standard.integer(forKey: "duplicatesFreedBytes")) }
+        set { UserDefaults.standard.set(Int(newValue), forKey: "duplicatesFreedBytes") }
+    }
+    var duplicatesRemoved: Int {
+        get { UserDefaults.standard.integer(forKey: "duplicatesRemoved") }
+        set { UserDefaults.standard.set(newValue, forKey: "duplicatesRemoved") }
+    }
+
+    // MARK: - Повторы
+
+    /// Группа почти одинаковых скриншотов: серия кадров одного экрана.
+    struct DuplicateGroup: Identifiable, Sendable {
+        let id: String
+        /// Лучший кадр серии — его предлагаем оставить.
+        let keep: Screenshot
+        /// Остальные — кандидаты на удаление.
+        let drop: [Screenshot]
+        var all: [Screenshot] { [keep] + drop }
+    }
+
+    /// Насколько кадры должны совпадать, чтобы считаться повтором:
+    /// 6 ячеек из 256. На наборе проверки настоящие повторы дают 0–1,
+    /// а ближайшие непохожие экраны — 12, так что зазор безопасный.
+    private static let duplicateThreshold = 6
+
+    /// Вторая проверка — по распознанному тексту. Картинка может совпасть
+    /// раскладкой, но если на ней другие слова, это разные экраны.
+    private func textMatches(_ a: Screenshot, _ b: Screenshot) -> Bool {
+        let x = a.text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let y = b.text.trimmingCharacters(in: .whitespacesAndNewlines)
+        if x.isEmpty && y.isEmpty { return true }          // обои и фото без текста
+        if x.isEmpty != y.isEmpty { return false }
+        if x == y { return true }
+        let wa = Set(x.lowercased().split(separator: " "))
+        let wb = Set(y.lowercased().split(separator: " "))
+        guard !wa.isEmpty, !wb.isEmpty else { return false }
+        let common = Double(wa.intersection(wb).count)
+        return common / Double(min(wa.count, wb.count)) >= 0.8
+    }
+
+    /// Серии повторов: у кадра есть отпечаток, картинка ещё в галерее,
+    /// раскладка совпадает и текст на кадрах один и тот же.
+    var duplicateGroups: [DuplicateGroup] {
+        let pool = all.filter { !$0.isFreed && $0.phash != nil }
+            .sorted { $0.createdAt > $1.createdAt }
+        var used = Set<String>()
+        var groups: [DuplicateGroup] = []
+
+        for s in pool where !used.contains(s.id) {
+            guard let h = s.phash else { continue }
+            var series = [s]
+            for other in pool where !used.contains(other.id) && other.id != s.id {
+                guard let oh = other.phash else { continue }
+                guard h.distance(to: oh) <= Self.duplicateThreshold else { continue }
+                guard textMatches(s, other) else { continue }
+                series.append(other)
+            }
+            guard series.count > 1 else { continue }
+            series.forEach { used.insert($0.id) }
+            let keep = bestOfSeries(series)
+            groups.append(DuplicateGroup(id: keep.id,
+                                         keep: keep,
+                                         drop: series.filter { $0.id != keep.id }
+                                                     .sorted { $0.createdAt > $1.createdAt }))
+        }
+        return groups.sorted { $0.keep.createdAt > $1.keep.createdAt }
+    }
+
+    /// Лучший кадр серии: сначала тот, где больше распознанного текста и находок,
+    /// при равенстве — крупнее по пикселям, затем более свежий.
+    private func bestOfSeries(_ series: [Screenshot]) -> Screenshot {
+        series.max { a, b in
+            if a.extracted.count != b.extracted.count { return a.extracted.count < b.extracted.count }
+            if a.text.count != b.text.count { return a.text.count < b.text.count }
+            let pa = a.width * a.height, pb = b.width * b.height
+            if pa != pb { return pa < pb }
+            return a.createdAt < b.createdAt
+        } ?? series[0]
+    }
+
+    var duplicateDropCount: Int { duplicateGroups.reduce(0) { $0 + $1.drop.count } }
+
     /// Сколько всего освободили за всё время.
-    var freedTotal: Int64 { items.values.reduce(0) { $0 + $1.freedBytes } }
+    var freedTotal: Int64 { items.values.reduce(0) { $0 + $1.freedBytes } + duplicatesFreedBytes }
     var freedCount: Int { items.values.filter(\.isFreed).count }
 
     func asset(for s: Screenshot) -> PHAsset? { library.asset(id: s.id) }

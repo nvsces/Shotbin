@@ -10,7 +10,9 @@
 		87ACE436905158BDB8AD6CA6 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55EB923C56D5AFEA5D197CF /* AppModel.swift */; };
 		0946D44B8906514F80A11314 /* CleanupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F6597638790557686AD7591 /* CleanupView.swift */; };
 		CE9D23F39657525CB59158AB /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88178FAF14065B18B436DB77 /* DetailView.swift */; };
+		168D5A1A6F4D591E93BD6827 /* DuplicatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672EFB6D02DD5465BCC7FC87 /* DuplicatesView.swift */; };
 		F7211C84AFE356E08E55F46D /* Extractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44B1B233F554598D9299EB20 /* Extractor.swift */; };
+		CDCAE26939F15ACDB3CFE0E7 /* Fingerprint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46419278B6DB51D28A6C54F6 /* Fingerprint.swift */; };
 		80A75AC6AC205A6D892AC1F3 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 734EAFEC130152DD9E05492D /* Models.swift */; };
 		62F4CE88FABF5E84B08685A2 /* OCR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041259EE3AD55FF99C0CDAB4 /* OCR.swift */; };
 		0A77759E96825F1D8C088A43 /* PhotoLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7AB5727D96F5DDD8D0DEF3A /* PhotoLibrary.swift */; };
@@ -35,7 +37,9 @@
 		C55EB923C56D5AFEA5D197CF /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		6F6597638790557686AD7591 /* CleanupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanupView.swift; sourceTree = "<group>"; };
 		88178FAF14065B18B436DB77 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
+		672EFB6D02DD5465BCC7FC87 /* DuplicatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuplicatesView.swift; sourceTree = "<group>"; };
 		44B1B233F554598D9299EB20 /* Extractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extractor.swift; sourceTree = "<group>"; };
+		46419278B6DB51D28A6C54F6 /* Fingerprint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fingerprint.swift; sourceTree = "<group>"; };
 		734EAFEC130152DD9E05492D /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		041259EE3AD55FF99C0CDAB4 /* OCR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCR.swift; sourceTree = "<group>"; };
 		A7AB5727D96F5DDD8D0DEF3A /* PhotoLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibrary.swift; sourceTree = "<group>"; };
@@ -82,7 +86,9 @@
 				C55EB923C56D5AFEA5D197CF /* AppModel.swift */,
 				6F6597638790557686AD7591 /* CleanupView.swift */,
 				88178FAF14065B18B436DB77 /* DetailView.swift */,
+				672EFB6D02DD5465BCC7FC87 /* DuplicatesView.swift */,
 				44B1B233F554598D9299EB20 /* Extractor.swift */,
+				46419278B6DB51D28A6C54F6 /* Fingerprint.swift */,
 				734EAFEC130152DD9E05492D /* Models.swift */,
 				041259EE3AD55FF99C0CDAB4 /* OCR.swift */,
 				A7AB5727D96F5DDD8D0DEF3A /* PhotoLibrary.swift */,
@@ -205,7 +211,9 @@
 				87ACE436905158BDB8AD6CA6 /* AppModel.swift in Sources */,
 				0946D44B8906514F80A11314 /* CleanupView.swift in Sources */,
 				CE9D23F39657525CB59158AB /* DetailView.swift in Sources */,
+				168D5A1A6F4D591E93BD6827 /* DuplicatesView.swift in Sources */,
 				F7211C84AFE356E08E55F46D /* Extractor.swift in Sources */,
+				CDCAE26939F15ACDB3CFE0E7 /* Fingerprint.swift in Sources */,
 				80A75AC6AC205A6D892AC1F3 /* Models.swift in Sources */,
 				62F4CE88FABF5E84B08685A2 /* OCR.swift in Sources */,
 				0A77759E96825F1D8C088A43 /* PhotoLibrary.swift in Sources */,

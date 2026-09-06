@@ -92,6 +92,8 @@ struct Screenshot: Codable, Identifiable, Hashable, Sendable {
     var freedBytes: Int64 = 0
     /// Копия миниатюры в JPEG — чтобы карточка после уборки не была пустой.
     var thumbnailData: Data? = nil
+    /// Отпечаток кадра: по нему находим повторяющиеся скриншоты одного экрана.
+    var phash: Fingerprint? = nil
 
     static func == (a: Screenshot, b: Screenshot) -> Bool { a.id == b.id }
     func hash(into h: inout Hasher) { h.combine(id) }

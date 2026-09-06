@@ -45,6 +45,26 @@ final class RecallUITests: XCTestCase {
         let reminders = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Все напоминания'")).firstMatch
         if reminders.exists { reminders.tap(); sleep(1); shot("reminders"); app.navigationBars.buttons.element(boundBy: 0).tap() }
 
+        // повторы
+        let dups = app.cells.containing(.staticText, identifier: "Повторы").firstMatch
+        if dups.waitForExistence(timeout: 5) {
+            dups.tap(); sleep(3); shot("duplicates")
+            let del = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Удалить '")).firstMatch
+            if del.waitForExistence(timeout: 5) {
+                del.tap(); sleep(1)
+                let confirm = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Удалить и освободить'")).firstMatch
+                if confirm.waitForExistence(timeout: 5) {
+                    confirm.tap()
+                    for label in ["Delete", "Удалить"] {
+                        let b = springboard.buttons[label]
+                        if b.waitForExistence(timeout: 8) { b.tap(); break }
+                    }
+                    sleep(5); shot("duplicates-done")
+                }
+            }
+            app.navigationBars.buttons.element(boundBy: 0).tap(); sleep(1)
+        }
+
         // уборка: отмечаем «разобрался» на первой карточке, чтобы появился кандидат
         let shelf2 = app.cells.containing(.staticText, identifier: "Рецепты").firstMatch
         if shelf2.waitForExistence(timeout: 5) {
