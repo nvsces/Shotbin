@@ -15,7 +15,10 @@ struct RootView: View {
             }
             .navigationTitle("Recall")
         }
-        .task { if model.authorization == .authorized || model.authorization == .limited { model.scan() } }
+        .task {
+            if model.authorization == .authorized || model.authorization == .limited { model.scan() }
+            else if ProcessInfo.processInfo.arguments.contains("-autoRequest") { await model.requestAccess() }
+        }
     }
 
     private var welcomeView: some View {

@@ -34,6 +34,23 @@ open Recall.xcodeproj       # выбрать Team в Signing & Capabilities, ⌘
 
 iOS 17+. Разрешения: Фото (чтение и удаление), Календарь (только запись), Уведомления.
 
+### Проверка в симуляторе
+
+В симуляторе скриншотов нет, поэтому там разбираются все фото. Прогон UI-теста сам
+принимает системный диалог доступа к фото, ждёт распознавание, проходит по экранам
+и складывает снимки во вложения результата:
+
+```bash
+UDID=<id симулятора>
+xcrun simctl boot $UDID && xcrun simctl addmedia $UDID samples/*.png   # свои тестовые картинки
+xcodebuild test -project Recall.xcodeproj -scheme Recall -destination "id=$UDID" \
+  -resultBundlePath /tmp/recall.xcresult
+xcrun xcresulttool export attachments --path /tmp/recall.xcresult --output-path /tmp/recall-shots
+```
+
+Аргумент запуска `-autoRequest` заставляет приложение запросить доступ к фото сразу,
+без нажатия «Открыть галерею» (нужен только для автотестов).
+
 ## Как устроен разбор
 
 `Extractor.swift` — единственное место, где живут правила. На вход строки OCR сверху вниз,

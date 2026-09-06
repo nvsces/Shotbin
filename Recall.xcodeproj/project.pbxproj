@@ -17,7 +17,18 @@
 		1A146EC507C55B49B39D68D0 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC54ADF46A25108BC1F6802 /* RootView.swift */; };
 		09C2F1F8F32B5C7DA79105B7 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3289407F65B95E5596CDA9DC /* Store.swift */; };
 		A09FA85EB39250438B1D6FFD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE9E06E2CDA65269ADF39AA9 /* Assets.xcassets */; };
+		4D077897E6975AA3BDE9B926 /* RecallUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79AA4F6CD5255C0799747D9D /* RecallUITests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		EE0674FCA5715DABA45775F0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 67C3F414C1A4520FAE9ABA9D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E5BAB57A059650F98315E75F;
+			remoteInfo = Recall;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		C55EB923C56D5AFEA5D197CF /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
@@ -32,10 +43,19 @@
 		BE9E06E2CDA65269ADF39AA9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		17C4FC374D8A5D3DAE2E9F7C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		41B09E813799505CBCFD0DA7 /* Recall.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Recall.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B51464BDFEB3530DA514E2BC /* RecallUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RecallUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		79AA4F6CD5255C0799747D9D /* RecallUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecallUITests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		78FE2FA0028452E0BA0DE755 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		70C4CA571A5C5D1B97F7C70F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -49,6 +69,7 @@
 			isa = PBXGroup;
 			children = (
 				2BD767C2C4B055B680DE250D /* Recall */,
+				E1CC9273153054D886E343DF /* RecallUITests */,
 				6AF904CE09AC5E2990465E5B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -71,10 +92,19 @@
 			path = Recall;
 			sourceTree = "<group>";
 		};
+		E1CC9273153054D886E343DF /* RecallUITests */ = {
+			isa = PBXGroup;
+			children = (
+				79AA4F6CD5255C0799747D9D /* RecallUITests.swift */,
+			);
+			path = RecallUITests;
+			sourceTree = "<group>";
+		};
 		6AF904CE09AC5E2990465E5B /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				41B09E813799505CBCFD0DA7 /* Recall.app */,
+				B51464BDFEB3530DA514E2BC /* RecallUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -98,6 +128,24 @@
 			productName = Recall;
 			productReference = 41B09E813799505CBCFD0DA7 /* Recall.app */;
 			productType = "com.apple.product-type.application";
+		};
+		153E199E71655E1484C8D94F /* RecallUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FC70986F7F515D4A8615D262;
+			buildPhases = (
+				17849E8982445ED09F320C42 /* Sources */,
+				70C4CA571A5C5D1B97F7C70F /* Frameworks */,
+				E01923016D83566B843FE352 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				459E4949804A5DBEB6D51CD2 /* PBXTargetDependency */,
+			);
+			name = RecallUITests;
+			productName = RecallUITests;
+			productReference = B51464BDFEB3530DA514E2BC /* RecallUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
@@ -123,6 +171,7 @@
 			projectRoot = "";
 			targets = (
 				E5BAB57A059650F98315E75F /* Recall */,
+				153E199E71655E1484C8D94F /* RecallUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -133,6 +182,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				A09FA85EB39250438B1D6FFD /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E01923016D83566B843FE352 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -155,7 +211,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		17849E8982445ED09F320C42 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4D077897E6975AA3BDE9B926 /* RecallUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		459E4949804A5DBEB6D51CD2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E5BAB57A059650F98315E75F /* Recall */;
+			targetProxy = EE0674FCA5715DABA45775F0 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		A0E93667EA9758D4A0B80B83 /* Debug */ = {
@@ -251,6 +323,44 @@
 			};
 			name = Release;
 		};
+		DB0CBED7F1BD5DD9B9E9C83C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nvsces.recall.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = Recall;
+			};
+			name = Debug;
+		};
+		377B5721557E59C2A8041847 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nvsces.recall.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = Recall;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -268,6 +378,15 @@
 			buildConfigurations = (
 				45A6EFFF0001511FA64BE0A8 /* Debug */,
 				F8E9AF69550757F9AABBA980 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FC70986F7F515D4A8615D262 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DB0CBED7F1BD5DD9B9E9C83C /* Debug */,
+				377B5721557E59C2A8041847 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

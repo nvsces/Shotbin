@@ -47,7 +47,7 @@ final class AppModel: ObservableObject {
         var out: [Reminder] = []
         let now = Date()
         for s in all where !s.isDone {
-            if let d = s.upcomingDate, d.timeIntervalSince(now) < 7 * 86400 {
+            if let d = s.upcomingDate, d.timeIntervalSince(now) < 30 * 86400 {
                 let f = RelativeDateTimeFormatter(); f.locale = Locale(identifier: "ru_RU"); f.unitsStyle = .full
                 out.append(Reminder(id: "up-\(s.id)", kind: .upcoming, screenshot: s, title: s.summary,
                                     subtitle: "Дата на скриншоте — \(f.localizedString(for: d, relativeTo: now))", date: d))
