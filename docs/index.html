@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shotbin — Политика конфиденциальности</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1a1c; --muted: #6b6b70;
+    --line: #e6e6ea; --accent: #5a61f7; --card: #f6f6f9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #101012; --fg: #f2f2f5; --muted: #a0a0a8;
+            --line: #2a2a2f; --accent: #868cff; --card: #1a1a1e; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0 20px; background: var(--bg); color: var(--fg);
+    font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-text-size-adjust: 100%;
+  }
+  main { max-width: 680px; margin: 0 auto; padding: 56px 0 80px; }
+  h1 { font-size: 34px; line-height: 1.2; margin: 0 0 6px; letter-spacing: -0.02em; }
+  h2 { font-size: 22px; margin: 40px 0 12px; letter-spacing: -0.01em; }
+  p { margin: 0 0 16px; }
+  ul { margin: 0 0 16px; padding-left: 22px; }
+  li { margin-bottom: 8px; }
+  .lead { font-size: 19px; color: var(--muted); margin-bottom: 8px; }
+  .date { color: var(--muted); font-size: 15px; margin-bottom: 40px; }
+  .card {
+    background: var(--card); border-radius: 14px; padding: 20px 22px; margin: 24px 0;
+  }
+  .card p:last-child { margin-bottom: 0; }
+  a { color: var(--accent); }
+  .switch { margin-bottom: 36px; font-size: 15px; display: flex; gap: 8px; }
+  .switch a {
+    text-decoration: none; color: var(--muted); padding: 6px 14px;
+    border: 1px solid var(--line); border-radius: 999px;
+  }
+  .switch a.on { color: var(--bg); background: var(--fg); border-color: var(--fg); }
+  footer {
+    margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--line);
+    color: var(--muted); font-size: 15px;
+  }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+
+<div class="switch">
+  <a id="tab-ru" href="#ru" onclick="show('ru'); return false;">Русский</a>
+  <a id="tab-en" href="#en" onclick="show('en'); return false;">English</a>
+</div>
+
+<section id="ru" aria-label="Русская версия">
+  <h1>Политика конфиденциальности</h1>
+  <p class="lead">Shotbin</p>
+  <p class="date">Обновлено 7 сентября 2026 года</p>
+
+  <div class="card">
+    <p><strong>Коротко: Shotbin не собирает никаких данных.</strong> Приложение работает целиком на вашем устройстве. У него нет сервера, нет аккаунта и нет аналитики. Разработчик не получает ни ваших скриншотов, ни распознанного текста, ни сведений о том, как вы пользуетесь приложением.</p>
+  </div>
+
+  <h2>Что приложение делает с вашими данными</h2>
+  <p>Shotbin читает скриншоты из вашей медиатеки и распознаёт на них текст средствами системы iOS. Распознавание выполняется на устройстве, без обращения к интернету.</p>
+  <p>Результаты разбора — распознанный текст, найденные коды, суммы и даты, а также уменьшенные копии изображений — сохраняются в защищённом хранилище приложения на вашем устройстве. Эти данные доступны только самому приложению и удаляются вместе с ним.</p>
+
+  <h2>Доступы, которые запрашивает приложение</h2>
+  <ul>
+    <li><strong>Фото.</strong> Нужен, чтобы читать скриншоты и удалять те, которые вы сами выбрали. Удалённые снимки система помещает в «Недавно удалённые» и хранит там 30 дней.</li>
+    <li><strong>Календарь.</strong> Запрашивается только на запись и только в момент, когда вы нажимаете «В календарь». Shotbin не может читать ваши существующие события.</li>
+    <li><strong>Уведомления.</strong> Используются для локальных напоминаний о датах, найденных на скриншотах. Уведомления формируются на устройстве и никуда не отправляются.</li>
+  </ul>
+
+  <h2>Когда данные всё-таки покидают устройство</h2>
+  <p>Это происходит только по вашему действию, и всякий раз это ваш собственный выбор:</p>
+  <ul>
+    <li>Если скриншот выгружен в Медиатеку iCloud и не хранится на устройстве целиком, система загружает его для распознавания. Это обмен между вашим устройством и вашим аккаунтом iCloud, к которому у разработчика нет доступа.</li>
+    <li>Когда вы нажимаете действие в карточке, приложение передаёт нужное значение системе: номер — приложению «Телефон», адрес — «Картам», ссылку — браузеру, название фильма — поисковому сервису. Дальше данные обрабатываются по правилам того сервиса, а не Shotbin.</li>
+  </ul>
+
+  <h2>Передача третьим лицам</h2>
+  <p>Никакой передачи нет. В приложении нет сторонних библиотек, рекламных сетей, систем аналитики и трекеров.</p>
+
+  <h2>Дети</h2>
+  <p>Приложение не предназначено специально для детей и не собирает данные ни о ком, включая детей.</p>
+
+  <h2>Изменения</h2>
+  <p>Если политика изменится, обновлённая версия появится на этой странице с новой датой.</p>
+
+  <h2>Связь</h2>
+  <p>Вопросы о конфиденциальности: <a href="mailto:nvsces@gmail.com">nvsces@gmail.com</a></p>
+</section>
+
+<section id="en" hidden aria-label="English version">
+  <h1>Privacy Policy</h1>
+  <p class="lead">Shotbin</p>
+  <p class="date">Updated 7 September 2026</p>
+
+  <div class="card">
+    <p><strong>In short: Shotbin collects no data at all.</strong> The app runs entirely on your device. It has no server, no account and no analytics. The developer receives none of your screenshots, none of the recognised text and no information about how you use the app.</p>
+  </div>
+
+  <h2>What the app does with your data</h2>
+  <p>Shotbin reads screenshots from your photo library and recognises the text on them using the frameworks built into iOS. Recognition runs on your device and requires no internet connection.</p>
+  <p>The results — recognised text, the codes, amounts and dates that were found, and small copies of the images — are stored in the app's protected storage on your device. Only the app can read them, and they are removed when you delete the app.</p>
+
+  <h2>Permissions the app requests</h2>
+  <ul>
+    <li><strong>Photos.</strong> Needed to read your screenshots and to delete the ones you choose yourself. Deleted images go to Recently Deleted, where the system keeps them for 30 days.</li>
+    <li><strong>Calendar.</strong> Requested as write-only, and only when you tap "Add to Calendar". Shotbin cannot read your existing events.</li>
+    <li><strong>Notifications.</strong> Used for local reminders about dates found on your screenshots. Reminders are created on the device and are never sent anywhere.</li>
+  </ul>
+
+  <h2>When data does leave your device</h2>
+  <p>Only when you ask for it, and every time it is your own choice:</p>
+  <ul>
+    <li>If a screenshot is stored in iCloud Photos and not kept in full on your device, the system downloads it so the text can be recognised. That exchange happens between your device and your own iCloud account, which the developer cannot access.</li>
+    <li>When you tap an action in a card, the app hands the value to the system: a phone number goes to the Phone app, an address to Maps, a link to your browser, a film title to a search service. From that point the data is handled under that service's rules, not Shotbin's.</li>
+  </ul>
+
+  <h2>Sharing with third parties</h2>
+  <p>There is none. The app contains no third-party libraries, ad networks, analytics or trackers.</p>
+
+  <h2>Children</h2>
+  <p>The app is not directed at children and collects no data about anyone, children included.</p>
+
+  <h2>Changes</h2>
+  <p>If this policy changes, the updated version will appear on this page with a new date.</p>
+
+  <h2>Contact</h2>
+  <p>Privacy questions: <a href="mailto:nvsces@gmail.com">nvsces@gmail.com</a></p>
+</section>
+
+<footer>Shotbin · <a href="https://github.com/nvsces/Shotbin">github.com/nvsces/Shotbin</a></footer>
+</main>
+
+<script>
+  function show(lang) {
+    document.getElementById('ru').hidden = lang !== 'ru';
+    document.getElementById('en').hidden = lang !== 'en';
+    document.documentElement.lang = lang;
+    document.getElementById('tab-ru').className = lang === 'ru' ? 'on' : '';
+    document.getElementById('tab-en').className = lang === 'en' ? 'on' : '';
+    history.replaceState(null, '', '#' + lang);
+  }
+  // Английский по умолчанию для тех, у кого система не на русском.
+  var pref = location.hash === '#en' ? 'en'
+           : location.hash === '#ru' ? 'ru'
+           : (navigator.language || '').toLowerCase().startsWith('ru') ? 'ru' : 'en';
+  show(pref);
+</script>
+</body>
+</html>

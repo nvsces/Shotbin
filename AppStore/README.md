@@ -38,3 +38,14 @@ swift frame.swift /tmp/att en screenshots/en
 Ключевые слова:
 - ru: `скриншот,распознать текст,OCR,очистка галереи,дубликаты,память,коды,чеки,билеты`
 - en: `screenshot,OCR,text recognition,cleanup,duplicates,storage,codes,receipts,tickets`
+
+## Политика конфиденциальности
+
+Страница лежит в `docs/index.html` (русский и английский на одной странице,
+язык выбирается по системному и переключается вручную).
+
+Опубликовать: Settings → Pages → Deploy from a branch → main, папка `/docs`.
+Адрес для App Store Connect: `https://nvsces.github.io/Shotbin/`
+
+В App Store Connect в разделе App Privacy отвечать «Data Not Collected»:
+приложение не собирает ничего, включая идентификаторы и диагностику.

@@ -88,6 +88,15 @@ xcrun xcresulttool export attachments --path /tmp/shotbin.xcresult --output-path
 Поиск повторов сравнивает все пары кадров, поэтому результат кэшируется и
 пересчитывается только после изменения карточек.
 
+## Конфиденциальность
+
+Приложение не собирает данных: нет сервера, аккаунта, аналитики и сторонних
+библиотек. Всё распознавание идёт средствами системы на устройстве.
+
+Страница политики: `docs/index.html`, двуязычная. После включения GitHub Pages
+(Settings → Pages → Deploy from a branch → main / docs) она открывается по адресу
+`https://nvsces.github.io/Shotbin/` — этот адрес и указывается в App Store Connect.
+
 ## Языки
 
 Русский и английский. Строки живут в каталоге `Shotbin/Localizable.xcstrings`,
