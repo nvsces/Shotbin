@@ -3,3 +3,5 @@ Recall.xcodeproj/project.xcworkspace/xcuserdata/
 build/
 DerivedData/
 .DS_Store
+xcuserdata/
+*.xcuserstate
