@@ -34,13 +34,8 @@ swift frame.swift /tmp/att en screenshots/en
 
 ## Тексты для карточки
 
-Подзаголовок (30 символов):
-- ru: `Скриншоты сами по полкам`
-- en: `Screenshots, sorted for you`
-
-Ключевые слова:
-- ru: `скриншот,распознать текст,OCR,очистка галереи,дубликаты,память,коды,чеки,билеты`
-- en: `screenshot,OCR,text recognition,cleanup,duplicates,storage,codes,receipts,tickets`
+Все поля App Store Connect с готовыми значениями и лимитами — в `fields.md`.
+Описания приложения — в `description-ru.txt` и `description-en.txt`.
 
 ## Политика конфиденциальности
 
